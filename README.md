@@ -73,6 +73,7 @@ for i in 0..<count {
 ```
 
 This example demonstrates how to:
+
 1. Define a simple Metal shader for adding two arrays
 2. Set up the compute environment
 3. Create input data and Metal buffers
@@ -81,6 +82,8 @@ This example demonstrates how to:
 6. Read back and verify the results
 
 ## Requirements
+
+Compute current requires macOS 15/iOS 17 (which as of writing are in beta). This is because Compute uses the new metal logging facilities in Metal 3.2 It is possible to use Compute with earlier versions of macOS/iOS, but you will need to modify the code to use the older Metal API. Pull requests are welcome to make this work on older OSes.
 
 - iOS 17.0+ / macOS 15+
 - Swift 6.0+
@@ -114,3 +117,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 We welcome contributions to the Compute Framework.
 
 Note: Some of our initial documentation and tests were AI-generated. We encourage contributors to review, improve, and expand upon this foundation with real-world expertise and use cases.
+
+## Links
+
+- [Metal Overview - Apple Developer](https://developer.apple.com/metal/)
+- [developer.apple.com/metal/Metal-Shading-Language-Specification.pdf](https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf)
+- [developer.apple.com/metal/Metal-Feature-Set-Tables.pdf](https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf)
+- [Metal by Example – High-performance graphics and data-parallel programming for iOS and macOS](https://metalbyexample.com)
+- [Introduction to Compute Programming in Metal – Metal by Example](https://metalbyexample.com/introduction-to-compute/)
+- [Shader | Apple Developer Documentation](https://developer.apple.com/documentation/swiftui/shader)
+- [Calculating Threadgroup and Grid Sizes | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/calculating_threadgroup_and_grid_sizes)
+- [Creating Threads and Threadgroups | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/creating_threads_and_threadgroups)
