@@ -49,15 +49,11 @@ let bufferResult = device.makeBuffer(length: MemoryLayout<Int32>.stride * count,
 let library = ShaderLibrary.source(source)
 let function = library.add
 
-// Create a compute pass
-let pass = try compute.makePass(
-    function: function,
-    arguments: [
-        "inA": .buffer(bufferA),
-        "inB": .buffer(bufferB),
-        "result": .buffer(bufferResult)
-    ]
-)
+// Create a compute pass and bind arguments.
+var pass = try compute.makePass(function: function)
+pass.arguments.inA = .buffer(bufferA)
+pass.arguments.inB = .buffer(inB)
+pass.arguments.result = .buffer(bufferResult)
 
 // Run the compute pass
 try compute.run(pass: pass, count: count)
