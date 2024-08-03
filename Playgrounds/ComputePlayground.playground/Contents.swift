@@ -14,9 +14,8 @@ kernel void add(device int* inA [[buffer(0)]],
 }
 """
 
-
 // Create input data
-let count = 1000
+let count = 1_000
 let inA = [Int32](repeating: 1, count: count)
 let inB = [Int32](repeating: 2, count: count)
 var result = [Int32](repeating: 0, count: count)
