@@ -10,7 +10,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "Compute"),
-        .executableTarget(name: "ComputeDemos", dependencies: ["Compute"]),
+        .executableTarget(name: "Examples", dependencies: ["Compute"]),
         .testTarget(name: "ComputeTests", dependencies: ["Compute"])
     ]
 )
