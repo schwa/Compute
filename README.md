@@ -1,21 +1,21 @@
-# Metal Compute Framework
+# Compute
 
 This project provides a high-level Swift framework for working with Metal compute shaders. It simplifies the process of setting up and executing compute tasks on GPU using Apple's Metal API.
 
-## Features
+## Inspiration
 
-- Easy-to-use abstraction layer over Metal's compute pipeline
-- Support for custom shader functions and libraries
-- Flexible argument passing to compute shaders
-- Logging support for debugging and performance monitoring
+This project draws inspiration from Apple's SwiftUI shaders introduced in iOS 17 and macOS Sonoma. SwiftUI shaders demonstrate how GPU operations can be made more accessible to developers, enabling complex visual effects with simple Swift code. Compute aims to provide a similar level of abstraction for Metal compute shaders, making it easier to perform data-parallel computations on the GPU.
+
 
 ## Usage Example
 
-Here's a simple example of how to use the Metal Compute Framework to perform a basic computation:
+Here's a quick example of how to use the Metal Compute Framework to perform a basic computation:
 
 ```swift
 import Compute
 import Metal
+
+// Example usage that adds two arrays of integers using Compute.
 
 // Metal shader source code
 let source = """
@@ -59,23 +59,13 @@ pass.arguments.result = .buffer(bufferResult)
 try compute.run(pass: pass, count: count)
 
 // Read back the results
-let resultData = Data(bytesNoCopy: bufferResult.contents(), count: MemoryLayout<Int32>.stride * count, deallocator: .none)
-result = resultData.withUnsafeBytes { $0.bindMemory(to: Int32.self) }
+result = bufferResult.contents().withUnsafeBytes { $0.bindMemory(to: Int32.self) }
 
 // Verify the results
 for i in 0..<count {
     assert(result[i] == inA[i] + inB[i], "Computation error at index \(i)")
 }
 ```
-
-This example demonstrates how to:
-
-1. Define a simple Metal shader for adding two arrays
-2. Set up the compute environment
-3. Create input data and Metal buffers
-4. Create a shader library and function
-5. Set up and run a compute pass
-6. Read back and verify the results
 
 ## Requirements
 
@@ -92,7 +82,7 @@ To integrate the Metal Compute Framework into your Xcode project using Swift Pac
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/schwa/Compute.git", .from(from: "0.1"))
+    .package(url: "https://github.com/schwa/Compute.git", .from(from: "0.0.1"))
 ]
 ```
 
@@ -110,9 +100,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributing
 
-We welcome contributions to the Compute Framework.
+Contributions are welcome to the Compute Framework.
 
-Note: Some of our initial documentation and tests were AI-generated. We encourage contributors to review, improve, and expand upon this foundation with real-world expertise and use cases.
+Note: Some of our initial documentation and tests were AI-generated.
 
 ## Links
 
