@@ -116,11 +116,31 @@ Note: Some of our initial documentation and tests were AI-generated. We encourag
 
 ## Links
 
-- [Metal Overview - Apple Developer](https://developer.apple.com/metal/)
-- [developer.apple.com/metal/Metal-Shading-Language-Specification.pdf](https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf)
-- [developer.apple.com/metal/Metal-Feature-Set-Tables.pdf](https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf)
-- [Metal by Example – High-performance graphics and data-parallel programming for iOS and macOS](https://metalbyexample.com)
-- [Introduction to Compute Programming in Metal – Metal by Example](https://metalbyexample.com/introduction-to-compute/)
-- [Shader | Apple Developer Documentation](https://developer.apple.com/documentation/swiftui/shader)
-- [Calculating Threadgroup and Grid Sizes | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/calculating_threadgroup_and_grid_sizes)
-- [Creating Threads and Threadgroups | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/creating_threads_and_threadgroups)
+> [Metal Overview - Apple Developer](https://developer.apple.com/metal/)
+
+Apple's main Metal documentation.
+
+> - [developer.apple.com/metal/Metal-Shading-Language-Specification.pdf](https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf)
+
+The Metal Shading Language Specification book. This is the definitive guide to writing shaders in Metal.
+
+> - [developer.apple.com/metal/Metal-Feature-Set-Tables.pdf](https://developer.apple.com/metal/Metal-Feature-Set-Tables.pdf)
+
+The Metal Feature Set Tables book. This is a reference for which features are available on which devices/Metal versions.
+
+> - [Metal by Example – High-performance graphics and data-parallel programming for iOS and macOS](https://metalbyexample.com)
+
+Warren Moore's blog is the single best resource for learning Metal programming.
+
+> - [Introduction to Compute Programming in Metal – Metal by Example](https://metalbyexample.com/introduction-to-compute/)
+
+Warren has some posts on Compute programming in Metal but they're showing their age a bit. Nevertheless, they're a good starting point.
+
+> - [Shader | Apple Developer Documentation](https://developer.apple.com/documentation/swiftui/shader)
+
+SwiftUI's Shader was the primary inspiration for this project.
+
+> - [Calculating Threadgroup and Grid Sizes | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/calculating_threadgroup_and_grid_sizes)
+> - [Creating Threads and Threadgroups | Apple Developer Documentation](https://developer.apple.com/documentation/metal/compute_passes/creating_threads_and_threadgroups)
+
+How to calculate threadgroup and grid sizes. This is a critical concept in Metal compute programming.
