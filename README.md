@@ -1,6 +1,6 @@
-# Compute
-
 ![alt text](Documentation/compute-logo.svg)
+
+# Compute
 
 This project provides a high-level Swift framework for working with Metal compute shaders. It simplifies the process of setting up and executing compute tasks on GPU using Apple's Metal API.
 
