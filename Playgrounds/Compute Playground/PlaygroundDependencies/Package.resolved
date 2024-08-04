@@ -1,0 +1,15 @@
+{
+  "originHash" : "780f609259dd564acaeee7a3f81323aa048fd887346b23036c8774401b19a12c",
+  "pins" : [
+    {
+      "identity" : "compute",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/schwa/Compute",
+      "state" : {
+        "revision" : "ea97166b0a7a20eae318dc2994c4da0d288a03e2",
+        "version" : "0.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}

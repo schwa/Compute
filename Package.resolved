@@ -1,5 +1,4 @@
 {
-  "originHash" : "00f813be7a99871da308315569cc8736b6a61b19c3d87a23eb63cd2e63e3f1ea",
   "pins" : [
     {
       "identity" : "metalcompilerplugin",
@@ -20,5 +19,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
