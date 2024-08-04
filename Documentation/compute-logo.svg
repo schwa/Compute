@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
+  <defs>
+    <!-- Squircle shape with more padding -->
+    <path id="squircle" d="M40,20 C28,20 20,28 20,40 V160 C20,172 28,180 40,180 H160 C172,180 180,172 180,160 V40 C180,28 172,20 160,20 Z" />
+
+    <!-- Clip path using the squircle shape -->
+    <clipPath id="squircle-clip">
+      <use href="#squircle" />
+    </clipPath>
+  </defs>
+
+  <!-- Squircle outline -->
+  <use href="#squircle" fill="none" stroke="#007AFF" stroke-width="4" />
+
+  <!-- Content group clipped to squircle shape -->
+  <g clip-path="url(#squircle-clip)">
+    <!-- Lattice structure -->
+    <g stroke="#007AFF" stroke-width="1" opacity="0.3">
+      <!-- Horizontal lines -->
+      <line x1="40" y1="40" x2="160" y2="40" />
+      <line x1="40" y1="70" x2="160" y2="70" />
+      <line x1="40" y1="100" x2="160" y2="100" />
+      <line x1="40" y1="130" x2="160" y2="130" />
+      <line x1="40" y1="160" x2="160" y2="160" />
+
+      <!-- Vertical lines -->
+      <line x1="40" y1="40" x2="40" y2="160" />
+      <line x1="70" y1="40" x2="70" y2="160" />
+      <line x1="100" y1="40" x2="100" y2="160" />
+      <line x1="130" y1="40" x2="130" y2="160" />
+      <line x1="160" y1="40" x2="160" y2="160" />
+    </g>
+
+    <!-- Dots forming 'C' shape -->
+    <g fill="#007AFF">
+      <!-- Top row -->
+      <circle cx="40" cy="40" r="5" />
+      <circle cx="70" cy="40" r="5" />
+      <circle cx="100" cy="40" r="5" />
+      <circle cx="130" cy="40" r="5" />
+      <circle cx="160" cy="40" r="5" />
+
+      <!-- Left side -->
+      <circle cx="40" cy="70" r="5" />
+      <circle cx="40" cy="100" r="5" />
+      <circle cx="40" cy="130" r="5" />
+
+      <!-- Bottom row -->
+      <circle cx="40" cy="160" r="5" />
+      <circle cx="70" cy="160" r="5" />
+      <circle cx="100" cy="160" r="5" />
+      <circle cx="130" cy="160" r="5" />
+      <circle cx="160" cy="160" r="5" />
+
+      <!-- Right side (partial, to form 'C') -->
+      <circle cx="160" cy="70" r="5" />
+      <circle cx="160" cy="130" r="5" />
+    </g>
+
+    <!-- Inner dots -->
+    <g fill="#007AFF" opacity="0.7">
+      <circle cx="70" cy="70" r="3" />
+      <circle cx="100" cy="70" r="3" />
+      <circle cx="130" cy="70" r="3" />
+      <circle cx="70" cy="100" r="3" />
+      <circle cx="100" cy="100" r="3" />
+      <circle cx="130" cy="100" r="3" />
+      <circle cx="70" cy="130" r="3" />
+      <circle cx="100" cy="130" r="3" />
+      <circle cx="130" cy="130" r="3" />
+    </g>
+
+    <!-- Connecting lines for 'C' shape -->
+    <path d="M40,40 L160,40 M160,40 L160,70 M160,130 L160,160 M160,160 L40,160 M40,160 L40,40"
+          stroke="#007AFF" stroke-width="2" fill="none" />
+  </g>
+</svg>
