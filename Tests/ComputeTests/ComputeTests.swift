@@ -64,7 +64,6 @@ struct ComputeTests {
         let count = 1_000
         let a = [Int32](repeating: 1, count: count)
         let b = [Int32](repeating: 2, count: count)
-        let result = [Int32](repeating: 0, count: count)
 
         let bufferA = device.makeBuffer(bytes: a, length: MemoryLayout<Int32>.stride * count, options: [])!
         let bufferB = device.makeBuffer(bytes: b, length: MemoryLayout<Int32>.stride * count, options: [])!
