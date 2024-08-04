@@ -12,9 +12,10 @@ enum Examples {
             try BareMetalVsCompute.main()
         case "memcopy":
             try BareMetalVsCompute.main()
-
+        case "helloworld":
+            try HelloWorldDemo.main()
         default:
-            try BareMetalVsCompute.main()
+            try HelloWorldDemo.main()
         }
     }
 }

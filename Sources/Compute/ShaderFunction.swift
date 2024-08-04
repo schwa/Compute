@@ -28,13 +28,28 @@ public struct ShaderLibrary: Sendable {
         }
     }
 
+
     /// Creates a shader library from source code.
     ///
     /// - Parameter source: The Metal shader source code as a string.
     /// - Returns: A new ShaderLibrary instance.
-    public static func source(_ source: String) -> Self {
+    @available(macOS 15, iOS 17, *)
+    public static func source(_ source: String, enableLogging: Bool = false) -> Self {
         Self { device in
             let options = MTLCompileOptions()
+            options.enableLogging = true
+            return try device.makeLibrary(source: source, options: options)
+        }
+    }
+
+    /// Creates a shader library from source code.
+    ///
+    /// - Parameters:
+    ///   - source: The Metal shader source code as a string.
+    ///   - options: MTLCompileOptions to use when making the library
+    /// - Returns: A new ShaderLibrary instance.
+    public static func source(_ source: String, options: MTLCompileOptions? = nil) -> Self {
+        Self { device in
             return try device.makeLibrary(source: source, options: options)
         }
     }

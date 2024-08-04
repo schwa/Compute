@@ -14,6 +14,7 @@ public struct Compute {
     /// The Metal command queue used for submitting command buffers.
     let commandQueue: MTLCommandQueue
 
+
     /// Initializes a new Compute instance.
     ///
     /// - Parameters:
@@ -23,11 +24,28 @@ public struct Compute {
     public init(device: MTLDevice, logger: Logger? = nil) throws {
         self.device = device
         self.logger = logger
-        guard let commandQueue = device.makeCommandQueue() else {
-            throw ComputeError.resourceCreationFailure
+        if #available(macOS 15, iOS 18, *) {
+            let logStateDescriptor = MTLLogStateDescriptor()
+            logStateDescriptor.bufferSize = 16 * 1024 * 1024
+            let logState = try device.makeLogState(descriptor: logStateDescriptor)
+            logState.addLogHandler { facility, component, level, message in
+                logger?.log("\(message)")
+            }
+            let commandQueueDescriptor = MTLCommandQueueDescriptor()
+            commandQueueDescriptor.logState = logState
+            guard let commandQueue = device.makeCommandQueue(descriptor: commandQueueDescriptor) else {
+                throw ComputeError.resourceCreationFailure
+            }
+            commandQueue.label = "Compute-MTLCommandQueue"
+            self.commandQueue = commandQueue
         }
-        commandQueue.label = "Compute-MTLCommandQueue"
-        self.commandQueue = commandQueue
+        else {
+            guard let commandQueue = device.makeCommandQueue() else {
+                throw ComputeError.resourceCreationFailure
+            }
+            commandQueue.label = "Compute-MTLCommandQueue"
+            self.commandQueue = commandQueue
+        }
     }
 
     /// Executes a compute task.
