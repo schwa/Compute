@@ -19,7 +19,7 @@ let package = Package(
             dependencies: ["Compute"],
             resources: [
                 .copy("Bundle.txt"),
-                .process("Resources/Media.xcassets"),
+                .process("Resources/Media.xcassets")
             ],
             plugins: [
                 .plugin(name: "MetalCompilerPlugin", package: "MetalCompilerPlugin")

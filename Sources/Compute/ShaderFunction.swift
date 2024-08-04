@@ -28,7 +28,6 @@ public struct ShaderLibrary: Sendable {
         }
     }
 
-
     /// Creates a shader library from source code.
     ///
     /// - Parameter source: The Metal shader source code as a string.
@@ -50,7 +49,7 @@ public struct ShaderLibrary: Sendable {
     /// - Returns: A new ShaderLibrary instance.
     public static func source(_ source: String, options: MTLCompileOptions? = nil) -> Self {
         Self { device in
-            return try device.makeLibrary(source: source, options: options)
+            try device.makeLibrary(source: source, options: options)
         }
     }
 

@@ -1,6 +1,6 @@
 import Compute
-import os
 import Metal
+import os
 
 enum HelloWorldDemo {
     // Metal shader source code as a string
@@ -11,7 +11,7 @@ enum HelloWorldDemo {
         using namespace metal;
 
         kernel void hello_world() {
-            os_log_default.log("Hello world (from Metal!)");
+        os_log_default.log("Hello world (from Metal!)");
         }
     """#
 
@@ -24,8 +24,7 @@ enum HelloWorldDemo {
         let library: ShaderLibrary
         if #available(macOS 15, *) {
             library = ShaderLibrary.source(source, enableLogging: true)
-        }
-        else {
+        } else {
             library = ShaderLibrary.source(source)
         }
         let helloWorld = try compute.makePipeline(function: library.hello_world)
