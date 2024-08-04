@@ -4,10 +4,10 @@ enum Examples {
         let argument = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : ""
 
         switch argument {
-#if os(macOS)
+        #if os(macOS)
         case "life":
             try await GameOfLife.main()
-#endif
+        #endif
         case "baremetal":
             try BareMetalVsCompute.main()
         case "memcopy":

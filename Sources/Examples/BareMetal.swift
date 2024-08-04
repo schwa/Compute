@@ -10,7 +10,7 @@ enum BareMetalVsCompute {
         uint thread_position_in_grid [[thread_position_in_grid]];
 
         kernel void memset(device uchar* output [[buffer(0)]], constant uchar &value [[buffer(1)]]) {
-            output[thread_position_in_grid] = value;
+        output[thread_position_in_grid] = value;
         }
     """#
 
@@ -18,14 +18,14 @@ enum BareMetalVsCompute {
         // Get the default Metal device
         let device = MTLCreateSystemDefaultDevice()!
         // Create a buffer and confirm it is zeroed
-        let buffer = device.makeBuffer(length: 16384)!
-        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy({ $0 == 0x00 }))
+        let buffer = device.makeBuffer(length: 16_384)!
+        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy { $0 == 0x00 })
         // Run compute and confirm the output is correct
         try compute(device: device, buffer: buffer, value: 0x88)
-        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy({ $0 == 0x88 }))
+        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy { $0 == 0x88 })
         // Run bareMetal and confirm the output is correct
         try bareMetal(device: device, buffer: buffer, value: 0xFF)
-        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy({ $0 == 0xFF }))
+        assert(UnsafeRawBufferPointer(start: buffer.contents(), count: buffer.length).allSatisfy { $0 == 0xFF })
     }
 
     static func bareMetal(device: MTLDevice, buffer: MTLBuffer, value: UInt8) throws {
@@ -40,10 +40,10 @@ enum BareMetalVsCompute {
         guard let reflection else {
             throw ComputeError.resourceCreationFailure
         }
-        guard let outputIndex = reflection.bindings.first(where: { $0.name == "output"})?.index else {
+        guard let outputIndex = reflection.bindings.first(where: { $0.name == "output" })?.index else {
             throw ComputeError.missingBinding("output")
         }
-        guard let valueIndex = reflection.bindings.first(where: { $0.name == "value"})?.index else {
+        guard let valueIndex = reflection.bindings.first(where: { $0.name == "value" })?.index else {
             throw ComputeError.missingBinding("value")
         }
 
@@ -92,5 +92,4 @@ enum BareMetalVsCompute {
         // Execute compute pipeline
         try compute.run(pipeline: fill, count: buffer.length)
     }
-
 }

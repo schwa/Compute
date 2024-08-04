@@ -6,8 +6,7 @@ import Metal
 import os
 
 enum GameOfLife {
-    static func main(density: Double = 0.5, width: Int = 256, height: Int = 256, frames: Int = 1200, framesPerSecond: Int = 60) async throws {
-
+    static func main(density: Double = 0.5, width: Int = 256, height: Int = 256, frames: Int = 1_200, framesPerSecond: Int = 60) async throws {
         let logger: Logger? = Logger()
 
         // Calculate total number of pixels
@@ -62,7 +61,6 @@ enum GameOfLife {
 
         let time = CMTimeMakeWithSeconds(0, preferredTimescale: 600)
         movieWriter.writeFrame(texture: textureA, at: time)
-
 
         // Main simulation loop
         for frame in 0..<frames {

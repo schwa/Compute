@@ -61,16 +61,22 @@ public extension Compute {
                     switch value {
                     case is Int8:
                         constants.setConstantValue(baseAddress, type: .char, withName: name)
+
                     case is UInt8:
                         constants.setConstantValue(baseAddress, type: .uchar, withName: name)
+
                     case is Int16:
                         constants.setConstantValue(baseAddress, type: .short, withName: name)
+
                     case is UInt16:
                         constants.setConstantValue(baseAddress, type: .ushort, withName: name)
+
                     case is Int32:
                         constants.setConstantValue(baseAddress, type: .int, withName: name)
+
                     case is UInt32:
                         constants.setConstantValue(baseAddress, type: .uint, withName: name)
+
                     default:
                         fatalError("Unsupported integer type.")
                     }
