@@ -35,7 +35,6 @@ public struct ShaderLibrary: Sendable {
     public static func source(_ source: String) -> Self {
         Self { device in
             let options = MTLCompileOptions()
-            options.enableLogging = true
             return try device.makeLibrary(source: source, options: options)
         }
     }

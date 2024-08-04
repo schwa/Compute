@@ -69,10 +69,7 @@ for i in 0..<count {
 
 ## Requirements
 
-Compute current requires macOS 15/iOS 17 (which as of writing are in beta). This is because Compute uses the new metal logging facilities in Metal 3.2 It is possible to use Compute with earlier versions of macOS/iOS, but you will need to modify the code to use the older Metal API. Pull requests are welcome to make this work on older OSes.
-
-- iOS 17.0+ / macOS 15+
-- Swift 6.0+
+- iOS 16.0+ / macOS 15+
 
 ## Installation
 
