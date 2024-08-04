@@ -74,6 +74,29 @@ public extension Compute {
             }
         }
 
+        /// Creates a float argument.
+        ///
+        /// - Parameter value: The float value.
+        /// - Returns: An `Argument` instance representing the float.
+        public static func float(_ value: Float) -> Self {
+            .init { encoder, index in
+                withUnsafeBytes(of: value) { buffer in
+                    guard let baseAddress = buffer.baseAddress else {
+                        fatalError("Could not get baseAddress.")
+                    }
+                    encoder.setBytes(baseAddress, length: buffer.count, index: index)
+                }
+            }
+            constantValue: { constants, name in
+                withUnsafeBytes(of: value) { buffer in
+                    guard let baseAddress = buffer.baseAddress else {
+                        fatalError("Could not get baseAddress.")
+                    }
+                    constants.setConstantValue(baseAddress, type: .float, withName: name)
+                }
+            }
+        }
+
         /// Creates a boolean argument.
         ///
         /// - Parameter value: The boolean value.
