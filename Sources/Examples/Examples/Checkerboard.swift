@@ -16,29 +16,29 @@ enum Checkerboard {
         uint2 gid [[thread_position_in_grid]];
 
         kernel void checkerboard(
-        texture2d<float, access::write> outputTexture [[texture(0)]],
-        constant float4 &color1 [[buffer(0)]],
-        constant float4 &color2 [[buffer(1)]],
-        constant uint2 &cellSize [[buffer(2)]]
+            texture2d<float, access::write> outputTexture [[texture(0)]],
+            constant float4 &color1 [[buffer(0)]],
+            constant float4 &color2 [[buffer(1)]],
+            constant uint2 &cellSize [[buffer(2)]]
         ) {
-        // Get the size of the texture
-        uint width = outputTexture.get_width();
-        uint height = outputTexture.get_height();
+            // Get the size of the texture
+            uint width = outputTexture.get_width();
+            uint height = outputTexture.get_height();
 
-        // Check if the current thread is within the texture bounds
-        if (gid.x >= width || gid.y >= height) {
-        return;
-        }
+            // Check if the current thread is within the texture bounds
+            if (gid.x >= width || gid.y >= height) {
+                return;
+            }
 
-        // Determine which square this pixel belongs to
-        uint squareX = gid.x / cellSize.x;
-        uint squareY = gid.y / cellSize.y;
+            // Determine which square this pixel belongs to
+            uint squareX = gid.x / cellSize.x;
+            uint squareY = gid.y / cellSize.y;
 
-        // Choose color based on whether the sum of squareX and squareY is even or odd
-        float4 color = ((squareX + squareY) % 2 == 0) ? color1 : color2;
+            // Choose color based on whether the sum of squareX and squareY is even or odd
+            float4 color = ((squareX + squareY) % 2 == 0) ? color1 : color2;
 
-        // Write the color to the output texture
-        outputTexture.write(color, gid);
+            // Write the color to the output texture
+            outputTexture.write(color, gid);
         }
     """#
 

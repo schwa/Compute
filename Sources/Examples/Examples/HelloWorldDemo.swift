@@ -11,7 +11,7 @@ enum HelloWorldDemo {
         using namespace metal;
 
         kernel void hello_world() {
-        os_log_default.log("Hello world (from Metal!)");
+            os_log_default.log("Hello world (from Metal!)");
         }
     """#
 

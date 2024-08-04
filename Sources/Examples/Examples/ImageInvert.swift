@@ -15,12 +15,12 @@ enum ImageInvert {
         uint2 gid [[thread_position_in_grid]];
 
         kernel void invertImage(
-        texture2d<float, access::read> inputTexture [[texture(0)]],
-        texture2d<float, access::write> outputTexture [[texture(1)]]
+            texture2d<float, access::read> inputTexture [[texture(0)]],
+            texture2d<float, access::write> outputTexture [[texture(1)]]
         ) {
-        float4 pixel = inputTexture.read(gid);
-        pixel.rgb = 1.0 - pixel.rgb;
-        outputTexture.write(pixel, gid);
+            float4 pixel = inputTexture.read(gid);
+            pixel.rgb = 1.0 - pixel.rgb;
+            outputTexture.write(pixel, gid);
         }
     """#
 

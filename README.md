@@ -8,7 +8,6 @@ This project provides a high-level Swift framework for working with Metal comput
 
 This project draws inspiration from Apple's SwiftUI shaders introduced in iOS 17 and macOS Sonoma. SwiftUI shaders demonstrate how GPU operations can be made more accessible to developers, enabling complex visual effects with simple Swift code. Compute aims to provide a similar level of abstraction for Metal compute shaders, making it easier to perform data-parallel computations on the GPU.
 
-
 ## Usage Example
 
 Here's a quick example of how to use the Metal Compute Framework to perform a basic computation:

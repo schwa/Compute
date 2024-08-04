@@ -18,19 +18,19 @@ enum MemcopyDemo {
 
         // Kernel to fill buffer with thread positions
         kernel void fill(
-        device uint* output [[buffer(0)]]  // Output buffer
+            device uint* output [[buffer(0)]]  // Output buffer
         )
         {
-        output[thread_position_in_grid] = thread_position_in_grid;
+            output[thread_position_in_grid] = thread_position_in_grid;
         }
 
         // Kernel to copy data from input buffer to output buffer
         kernel void memcpy(
-        const device uint* input [[buffer(0)]],  // Input buffer
-        device uint* output [[buffer(1)]]        // Output buffer
+            const device uint* input [[buffer(0)]],  // Input buffer
+            device uint* output [[buffer(1)]]        // Output buffer
         )
         {
-        output[thread_position_in_grid] = input[thread_position_in_grid];
+            output[thread_position_in_grid] = input[thread_position_in_grid];
         }
     """#
 
