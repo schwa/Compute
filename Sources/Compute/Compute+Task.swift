@@ -15,6 +15,12 @@ public extension Compute {
         /// The Metal command buffer associated with this task.
         let commandBuffer: MTLCommandBuffer
 
+        internal init(label: String?, logger: Logger?, commandBuffer: MTLCommandBuffer) {
+            self.label = label
+            self.logger = logger
+            self.commandBuffer = commandBuffer
+        }
+
         /// Executes a block of code with a `Dispatcher`.
         ///
         /// This method is a convenience wrapper around the `run` method.
@@ -61,6 +67,12 @@ public extension Compute {
         /// The Metal compute command encoder used to encode compute commands.
         public let commandEncoder: MTLComputeCommandEncoder
 
+        internal init(label: String?, logger: Logger?, commandEncoder: MTLComputeCommandEncoder) {
+            self.label = label
+            self.logger = logger
+            self.commandEncoder = commandEncoder
+        }
+
         /// Dispatches a compute operation using threadgroups.
         ///
         /// - Parameters:
@@ -71,6 +83,7 @@ public extension Compute {
         public func callAsFunction(pipeline: Pipeline, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
             logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
             logger?.info("Dispatching \(String(describing: threadgroupsPerGrid)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
+
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             try pipeline.bind(commandEncoder)
             commandEncoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -86,6 +99,8 @@ public extension Compute {
         public func callAsFunction(pipeline: Pipeline, threads: MTLSize, threadsPerThreadgroup: MTLSize) throws {
             logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
             logger?.info("Dispatching \(String(describing: threads)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
+
+            commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             try pipeline.bind(commandEncoder)
             commandEncoder.dispatchThreads(threads, threadsPerThreadgroup: threadsPerThreadgroup)
