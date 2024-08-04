@@ -1,9 +1,9 @@
+#if os(macOS)
 import AVFoundation
 import Compute
 import Foundation
 import Metal
 import os
-
 
 enum GameOfLife {
     static func main(density: Double = 0.5, width: Int = 256, height: Int = 256, frames: Int = 1200, framesPerSecond: Int = 60) async throws {
@@ -108,3 +108,4 @@ enum GameOfLife {
         print("Encode time", Double(totalEncodeTime) / Double(1_000_000_000))
     }
 }
+#endif
