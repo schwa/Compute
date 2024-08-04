@@ -14,8 +14,10 @@ enum Examples {
             try BareMetalVsCompute.main()
         case "helloworld":
             try HelloWorldDemo.main()
+        case "ImageInvert":
+            try ImageInvert.main()
         default:
-            try HelloWorldDemo.main()
+            try ImageInvert.main()
         }
     }
 }

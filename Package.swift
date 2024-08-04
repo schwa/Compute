@@ -18,7 +18,8 @@ let package = Package(
             name: "Examples",
             dependencies: ["Compute"],
             resources: [
-                .copy("Bundle.txt")
+                .copy("Bundle.txt"),
+                .process("Resources/Media.xcassets"),
             ],
             plugins: [
                 .plugin(name: "MetalCompilerPlugin", package: "MetalCompilerPlugin")

@@ -1,4 +1,6 @@
 import AVFoundation
+import Compute
+import CoreGraphics
 import Foundation
 
 public func getMachTimeInNanoseconds() -> UInt64 {
@@ -132,5 +134,36 @@ class TextureToVideoWriter {
             try FileManager().removeItem(at: outputURL)
         }
         try FileManager().moveItem(at: temporaryURL, to: outputURL)
+    }
+}
+
+extension MTLTexture {
+    func export(to url: URL) throws {
+        assert(pixelFormat == .bgra8Unorm_srgb)
+        assert(depth == 1)
+
+        let bytesPerRow = width * MemoryLayout<UInt8>.size * 4
+        guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else {
+            throw ComputeError.resourceCreationFailure
+        }
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
+            .union(.byteOrder32Little)
+        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) else {
+            throw ComputeError.resourceCreationFailure
+        }
+        guard let contextData = context.data else {
+            throw ComputeError.resourceCreationFailure
+        }
+        getBytes(contextData, bytesPerRow: bytesPerRow, from: MTLRegion(origin: MTLOrigin(x: 0, y: 0, z: 0), size: MTLSize(width: width, height: height, depth: 1)), mipmapLevel: 0)
+
+        guard let image = context.makeImage() else {
+            throw ComputeError.resourceCreationFailure
+        }
+
+        guard let imageDestination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else {
+            throw ComputeError.resourceCreationFailure
+        }
+        CGImageDestinationAddImage(imageDestination, image, nil)
+        CGImageDestinationFinalize(imageDestination)
     }
 }

@@ -10,7 +10,6 @@ enum HelloWorldDemo {
 
         using namespace metal;
 
-        // Empty kernel for baseline performance measurement
         kernel void hello_world() {
             os_log_default.log("Hello world (from Metal!)");
         }

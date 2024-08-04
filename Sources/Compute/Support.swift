@@ -51,4 +51,32 @@ public extension Compute {
             }
         }
     }
+
+    /// Runs a compute pipeline with the specified arguments and thread count.
+    ///
+    /// This method provides a convenient way to execute a single compute pipeline with optional additional arguments.
+    ///
+    /// - Parameters:
+    ///   - pipeline: The compute pipeline to run.
+    ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
+    ///   - count: The number of threads to dispatch.
+    /// - Throws: Any error that occurs during the execution of the compute pipeline.
+    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int, height: Int) throws {
+        var pipeline = pipeline
+        if let arguments {
+            var existing = pipeline.arguments.arguments
+            existing.merge(arguments) { $1 }
+            pipeline.arguments = .init(arguments: existing)
+        }
+        try task { task in
+            try task { dispatch in
+                let maxTotalThreadsPerThreadgroup = pipeline.computePipelineState.maxTotalThreadsPerThreadgroup
+
+                let threadsPerThreadgroupWidth = Int(sqrt(Double(maxTotalThreadsPerThreadgroup)))
+                let threadsPerThreadgroupHeight = maxTotalThreadsPerThreadgroup / threadsPerThreadgroupWidth
+
+                try dispatch(pipeline: pipeline, threads: MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: MTLSize(width: threadsPerThreadgroupWidth, height: threadsPerThreadgroupHeight, depth: 1))
+            }
+        }
+    }
 }
