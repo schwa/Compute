@@ -93,6 +93,20 @@ targets: [
 ]
 ```
 
+## Features
+
+Compute is designed to reduce the amount of boilerplate setup code needed to use Metal compute shaders. It provides a high-level API for creating compute passes, binding arguments, and executing compute tasks on the GPU.
+
+Compute brings type safety and Swift-friendly syntax to Metal compute programming. It uses Swift enums and structs to represent Metal objects and types, making it easier to work with Metal buffers, textures, and other resources.
+
+Compute handles and throws errors upon resource creation, shader compilation, and compute pass execution. This makes it easier to catch and handle errors in your code.
+
+Compute also automatically adds labels to most Metal resources to aid in debugging.
+
+This screenshot shows a comparison of code using Compute to code using "bare" Metal:
+
+![alt text](<Documentation/Screenshot 2024-08-04 at 09.57.19.png>)
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
