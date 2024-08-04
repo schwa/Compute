@@ -35,11 +35,12 @@ public extension Compute {
         /// A closure that sets the argument as a constant value in a function constant values object.
         internal var constantValue: (MTLFunctionConstantValues, String) -> Void
 
+
         /// Creates an integer argument.
         ///
         /// - Parameter value: The integer value.
         /// - Returns: An `Argument` instance representing the integer.
-        public static func int(_ value: Int32) -> Self {
+        public static func int(_ value: some BinaryInteger) -> Self {
             .init { encoder, index in
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
@@ -49,36 +50,26 @@ public extension Compute {
                 }
             }
             constantValue: { constants, name in
-                assert(MemoryLayout.size(ofValue: value) == MemoryLayout<Int32>.size)
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
                         fatalError("Could not get baseAddress.")
                     }
-                    constants.setConstantValue(baseAddress, type: .int, withName: name)
-                }
-            }
-        }
-
-        /// Creates an unsigned integer argument.
-        ///
-        /// - Parameter value: The unsigned integer value.
-        /// - Returns: An `Argument` instance representing the unsigned integer.
-        public static func int(_ value: UInt32) -> Self {
-            .init { encoder, index in
-                withUnsafeBytes(of: value) { buffer in
-                    guard let baseAddress = buffer.baseAddress else {
-                        fatalError("Could not get baseAddress.")
+                    switch value {
+                    case is Int8:
+                        constants.setConstantValue(baseAddress, type: .char, withName: name)
+                    case is UInt8:
+                        constants.setConstantValue(baseAddress, type: .uchar, withName: name)
+                    case is Int16:
+                        constants.setConstantValue(baseAddress, type: .short, withName: name)
+                    case is UInt16:
+                        constants.setConstantValue(baseAddress, type: .ushort, withName: name)
+                    case is Int32:
+                        constants.setConstantValue(baseAddress, type: .int, withName: name)
+                    case is UInt32:
+                        constants.setConstantValue(baseAddress, type: .uint, withName: name)
+                    default:
+                        fatalError("Unsupported integer type.")
                     }
-                    encoder.setBytes(baseAddress, length: buffer.count, index: index)
-                }
-            }
-            constantValue: { constants, name in
-                assert(MemoryLayout.size(ofValue: value) == MemoryLayout<UInt32>.size)
-                withUnsafeBytes(of: value) { buffer in
-                    guard let baseAddress = buffer.baseAddress else {
-                        fatalError("Could not get baseAddress.")
-                    }
-                    constants.setConstantValue(baseAddress, type: .uint, withName: name)
                 }
             }
         }
