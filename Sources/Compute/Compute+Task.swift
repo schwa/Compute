@@ -15,12 +15,6 @@ public extension Compute {
         /// The Metal command buffer associated with this task.
         let commandBuffer: MTLCommandBuffer
 
-        internal init(label: String?, logger: Logger?, commandBuffer: MTLCommandBuffer) {
-            self.label = label
-            self.logger = logger
-            self.commandBuffer = commandBuffer
-        }
-
         /// Executes a block of code with a `Dispatcher`.
         ///
         /// This method is a convenience wrapper around the `run` method.
@@ -66,12 +60,6 @@ public extension Compute {
 
         /// The Metal compute command encoder used to encode compute commands.
         public let commandEncoder: MTLComputeCommandEncoder
-
-        internal init(label: String?, logger: Logger?, commandEncoder: MTLComputeCommandEncoder) {
-            self.label = label
-            self.logger = logger
-            self.commandEncoder = commandEncoder
-        }
 
         /// Dispatches a compute operation using threadgroups.
         ///

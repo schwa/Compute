@@ -2,12 +2,12 @@ import Metal
 
 /// Enumerates the possible errors that can occur in the Compute framework.
 public enum ComputeError: Error {
-    /// Indicates a failure in creating a required resource, such as a command queue or buffer.
-    case resourceCreationFailure
-
     /// Indicates that a required binding for an argument is missing.
     /// - Parameter String: The name of the missing binding.
     case missingBinding(String)
+
+    /// Indicates a failure in creating a required resource, such as a command queue or buffer.
+    case resourceCreationFailure
 }
 
 public extension Compute {

@@ -2,6 +2,7 @@
 
 import PackageDescription
 
+// swiftlint:disable:next explicit_top_level_acl
 let package = Package(
     name: "Compute",
     platforms: [.macOS(.v14), .iOS(.v17)],

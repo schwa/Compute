@@ -1,0 +1,9 @@
+disabled_rules:
+- force_try
+- force_cast
+- force_unwrapping
+- function_body_length
+- fatal_error_message
+- line_length
+- identifier_name
+- explicit_top_level_acl

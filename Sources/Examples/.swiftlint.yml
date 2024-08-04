@@ -1,5 +1,10 @@
 disabled_rules:
-- force_try
+- explicit_top_level_acl
+- fatal_error_message
 - force_cast
+- force_try
 - force_unwrapping
-- todo
+- function_body_length
+- identifier_name
+- line_length
+- missing_docs

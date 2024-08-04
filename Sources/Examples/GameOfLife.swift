@@ -19,10 +19,8 @@ enum GameOfLife {
         logger?.log("Creating buffers")
         let bufferA = device.makeBuffer(length: pixelCount * MemoryLayout<UInt32>.size, options: [])!
         bufferA.contents().withMemoryRebound(to: UInt32.self, capacity: pixelCount) { buffer in
-            for n in 0..<pixelCount {
-                if Double.random(in: 0...1) <= density {
-                    buffer[n] = 0xFFFFFFFF
-                }
+            for n in 0..<pixelCount where Double.random(in: 0...1) <= density {
+                buffer[n] = 0xFFFFFFFF
             }
         }
         logger?.log("Creating textures")
@@ -81,8 +79,8 @@ enum GameOfLife {
                     }
                 }
             }
-            display: {
-                totalComputeTime += $0
+            display: { nanoseconds in
+                totalComputeTime += nanoseconds
             }
 
             // Write frame to video and measure time
@@ -90,8 +88,8 @@ enum GameOfLife {
                 let time = CMTimeMakeWithSeconds(Double(frame + 1) / Double(framesPerSecond), preferredTimescale: 600)
                 movieWriter.writeFrame(texture: outputTexture, at: time)
             }
-            display: {
-                totalEncodeTime += $0
+            display: { nanoseconds in
+                totalEncodeTime += nanoseconds
             }
         }
 
