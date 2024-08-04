@@ -56,12 +56,12 @@ class TextureToVideoWriter {
         self.temporaryURL = temporaryURL
         self.size = size
 
-        assetWriter = try AVAssetWriter(outputURL: temporaryURL, fileType: .mp4)
+        assetWriter = try AVAssetWriter(outputURL: temporaryURL, fileType: .mov)
     }
 
     func start() {
         let settings: [String: Any] = [
-            AVVideoCodecKey: AVVideoCodecType.h264,
+            AVVideoCodecKey: AVVideoCodecType.hevc,
             AVVideoWidthKey: size.width,
             AVVideoHeightKey: size.height
         ]
@@ -87,36 +87,40 @@ class TextureToVideoWriter {
     }
 
     func writeFrame(texture: MTLTexture, at time: CMTime) {
-        guard let adaptor, let pixelBufferPool = adaptor.pixelBufferPool else {
-            fatalError()
+        autoreleasepool {
+            guard let adaptor, let pixelBufferPool = adaptor.pixelBufferPool else {
+                fatalError()
+            }
+            var pixelBuffer: CVPixelBuffer?
+            CVPixelBufferPoolCreatePixelBuffer(nil, pixelBufferPool, &pixelBuffer)
+            guard let pixelBuffer else {
+                fatalError()
+            }
+            CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
+            guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+                fatalError()
+            }
+            let region = MTLRegionMake2D(0, 0, texture.width, texture.height)
+            texture.getBytes(baseAddress, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer), from: region, mipmapLevel: 0)
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
+            writeFrame(pixelBuffer: pixelBuffer, at: time)
+            endTime = time
         }
-        var pixelBuffer: CVPixelBuffer?
-        CVPixelBufferPoolCreatePixelBuffer(nil, pixelBufferPool, &pixelBuffer)
-        guard let pixelBuffer else {
-            fatalError()
-        }
-        CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
-        guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
-            fatalError()
-        }
-        let region = MTLRegionMake2D(0, 0, texture.width, texture.height)
-        texture.getBytes(baseAddress, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer), from: region, mipmapLevel: 0)
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-        writeFrame(pixelBuffer: pixelBuffer, at: time)
     }
 
     func writeFrame(pixelBuffer: CVPixelBuffer, at time: CMTime) {
-        guard let writerInput, let adaptor else {
-            fatalError()
-        }
-        if writerInput.isReadyForMoreMediaData == false {
-            // This isn't pretty but it works?
-            while writerInput.isReadyForMoreMediaData == false {
-                usleep(10 * 1_000)
+        autoreleasepool {
+            guard let writerInput, let adaptor else {
+                fatalError()
             }
+            if writerInput.isReadyForMoreMediaData == false {
+                // This isn't pretty but it works?
+                while writerInput.isReadyForMoreMediaData == false {
+                    usleep(10 * 1_000)
+                }
+            }
+            adaptor.append(pixelBuffer, withPresentationTime: time)
         }
-        adaptor.append(pixelBuffer, withPresentationTime: time)
-        endTime = time
     }
 
     func finish() async throws {
