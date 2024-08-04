@@ -1,4 +1,6 @@
 import Metal
+import simd
+import SwiftUI
 
 public extension Compute {
     /// A structure that holds and manages arguments for a compute pipeline.
@@ -156,6 +158,51 @@ public extension Compute {
             constantValue: { _, _ in
                 fatalError("Unimplemented")
             }
+        }
+
+        /// Creates an argument from a simd vector
+        ///
+        /// - Parameter value: The vector value.
+        /// - Returns: An `Argument` instance representing the boolean.
+        public static func vector<V>(_ value: V) -> Self where V: SIMD {
+            .init { encoder, index in
+                withUnsafeBytes(of: value) { buffer in
+                    guard let baseAddress = buffer.baseAddress else {
+                        fatalError("Could not get baseAddress.")
+                    }
+                    encoder.setBytes(baseAddress, length: buffer.count, index: index)
+                }
+            }
+            constantValue: { _, _ in
+                fatalError("Unimplemented")
+            }
+        }
+
+        /// Creates an argument from a simd vector
+        ///
+        /// - Parameter value: The vector value.
+        /// - Returns: An `Argument` instance representing the boolean.
+        public static func float4(_ value: SIMD4<Float>) -> Self {
+            .vector(value)
+        }
+
+        /// Creates an argument from a simd vector
+        ///
+        /// - Parameter value: The vector value.
+        /// - Returns: An `Argument` instance representing the boolean.
+        public static func color(_ value: Color) throws -> Self {
+            let cgColor = value.resolve(in: .init()).cgColor
+            guard let colorSpace = CGColorSpace(name: CGColorSpace.genericRGBLinear) else {
+                throw ComputeError.resourceCreationFailure
+            }
+            guard let components = cgColor.converted(to: colorSpace, intent: .defaultIntent, options: nil)?.components else {
+                throw ComputeError.resourceCreationFailure
+            }
+
+            // TODO: This assumes the pass wants a SIMD4<Float> - we can use reflection to work out what is needed and convert appropriately. This will mean we need to refactor Compute.Argument
+
+            let vector = SIMD4<Float>([Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3])])
+            return .vector(vector)
         }
     }
 }

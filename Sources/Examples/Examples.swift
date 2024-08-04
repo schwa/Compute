@@ -16,8 +16,11 @@ enum Examples {
             try HelloWorldDemo.main()
         case "ImageInvert":
             try ImageInvert.main()
+        case "Checkerboard":
+            try Checkerboard.main()
+
         default:
-            try ImageInvert.main()
+            try Checkerboard.main()
         }
     }
 }

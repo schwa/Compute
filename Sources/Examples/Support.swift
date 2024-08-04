@@ -139,11 +139,11 @@ class TextureToVideoWriter {
 
 extension MTLTexture {
     func export(to url: URL) throws {
-        assert(pixelFormat == .bgra8Unorm_srgb)
+        assert(pixelFormat == .bgra8Unorm)
         assert(depth == 1)
 
         let bytesPerRow = width * MemoryLayout<UInt8>.size * 4
-        guard let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) else {
+        guard let colorSpace = CGColorSpace(name: CGColorSpace.genericRGBLinear) else {
             throw ComputeError.resourceCreationFailure
         }
         let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue)
