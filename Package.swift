@@ -10,7 +10,14 @@ let package = Package(
     ],
     targets: [
         .target(name: "Compute"),
-        .executableTarget(name: "Examples", dependencies: ["Compute"]),
+        .executableTarget(
+            name: "Examples",
+            dependencies: ["Compute"],
+            resources: [
+                .process("Bundle.txt"),
+                .process("GameOfLife.metal"),
+            ]
+        ),
         .testTarget(name: "ComputeTests", dependencies: ["Compute"])
     ]
 )
