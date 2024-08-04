@@ -11,9 +11,6 @@ public struct Compute {
     /// The logger used for debugging and performance monitoring.
     let logger: Logger?
 
-    /// The Metal log state used for logging Metal-specific information.
-    let logState: MTLLogState?
-
     /// The Metal command queue used for submitting command buffers.
     let commandQueue: MTLCommandQueue
 
@@ -22,15 +19,11 @@ public struct Compute {
     /// - Parameters:
     ///   - device: The Metal device to use for compute operations.
     ///   - logger: An optional logger for debugging and performance monitoring.
-    ///   - logState: An optional Metal log state for logging Metal-specific information.
     /// - Throws: `ComputeError.resourceCreationFailure` if unable to create the command queue.
-    public init(device: MTLDevice, logger: Logger? = nil, logState: MTLLogState? = nil) throws {
+    public init(device: MTLDevice, logger: Logger? = nil) throws {
         self.device = device
         self.logger = logger
-        self.logState = logState
-        let commandQueueDescriptor = MTLCommandQueueDescriptor()
-        commandQueueDescriptor.logState = logState
-        guard let commandQueue = device.makeCommandQueue(descriptor: commandQueueDescriptor) else {
+        guard let commandQueue = device.makeCommandQueue() else {
             throw ComputeError.resourceCreationFailure
         }
         commandQueue.label = "Compute-MTLCommandQueue"
@@ -49,8 +42,6 @@ public struct Compute {
     ///           or any error thrown by the provided block.
     public func task<R>(label: String? = nil, _ block: (Task) throws -> R) throws -> R {
         let commandBufferDescriptor = MTLCommandBufferDescriptor()
-        commandBufferDescriptor.logState = logState
-
         guard let commandBuffer = commandQueue.makeCommandBuffer(descriptor: commandBufferDescriptor) else {
             throw ComputeError.resourceCreationFailure
         }
