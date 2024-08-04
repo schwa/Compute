@@ -33,7 +33,7 @@ struct ComputeTests {
     }
 
     @Test
-    func passCreation() throws {
+    func pipelineCreation() throws {
         let source = """
         #include <metal_stdlib>
         using namespace metal;
@@ -44,9 +44,9 @@ struct ComputeTests {
         let library = ShaderLibrary.source(source)
         let function = library.add
 
-        let pass = try compute.makePass(function: function)
+        let pipeline = try compute.makePipeline(function: function)
 
-        #expect(pass != nil)
+        #expect(pipeline != nil)
     }
 
     @Test
@@ -70,7 +70,7 @@ struct ComputeTests {
         let bufferB = device.makeBuffer(bytes: b, length: MemoryLayout<Int32>.stride * count, options: [])!
         let bufferResult = device.makeBuffer(length: MemoryLayout<Int32>.stride * count, options: [])!
 
-        let pass = try compute.makePass(
+        let pipeline = try compute.makePipeline(
             function: function,
             arguments: [
                 "a": .buffer(bufferA),
@@ -79,7 +79,7 @@ struct ComputeTests {
             ]
         )
 
-        try compute.run(pass: pass, count: count)
+        try compute.run(pipeline: pipeline, count: count)
 
         bufferResult.contents().withMemoryRebound(to: Int32.self, capacity: count) { result in
             for i in 0..<count {

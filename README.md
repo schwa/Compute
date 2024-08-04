@@ -51,14 +51,14 @@ let bufferResult = device.makeBuffer(length: MemoryLayout<Int32>.stride * count,
 let library = ShaderLibrary.source(source)
 let function = library.add
 
-// Create a compute pass and bind arguments.
-var pass = try compute.makePass(function: function)
-pass.arguments.inA = .buffer(bufferA)
-pass.arguments.inB = .buffer(inB)
-pass.arguments.result = .buffer(bufferResult)
+// Create a compute pipeline and bind arguments.
+var pipeline = try compute.makePipeline(function: function)
+pipeline.arguments.inA = .buffer(bufferA)
+pipeline.arguments.inB = .buffer(inB)
+pipeline.arguments.result = .buffer(bufferResult)
 
-// Run the compute pass
-try compute.run(pass: pass, count: count)
+// Run the compute pipeline
+try compute.run(pipeline: pipeline, count: count)
 
 // Read back the results
 result = bufferResult.contents().withUnsafeBytes { $0.bindMemory(to: Int32.self) }
@@ -95,11 +95,11 @@ targets: [
 
 ## Features
 
-Compute is designed to reduce the amount of boilerplate setup code needed to use Metal compute shaders. It provides a high-level API for creating compute passes, binding arguments, and executing compute tasks on the GPU.
+Compute is designed to reduce the amount of boilerplate setup code needed to use Metal compute shaders. It provides a high-level API for creating compute pipelines, binding arguments, and executing compute tasks on the GPU.
 
 Compute brings type safety and Swift-friendly syntax to Metal compute programming. It uses Swift enums and structs to represent Metal objects and types, making it easier to work with Metal buffers, textures, and other resources.
 
-Compute handles and throws errors upon resource creation, shader compilation, and compute pass execution. This makes it easier to catch and handle errors in your code.
+Compute handles and throws errors upon resource creation, shader compilation, and compute pipeline execution. This makes it easier to catch and handle errors in your code.
 
 Compute also automatically adds labels to most Metal resources to aid in debugging.
 

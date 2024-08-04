@@ -50,8 +50,8 @@ enum GameOfLife {
         var totalComputeTime: UInt64 = 0
         var totalEncodeTime: UInt64 = 0
 
-        // Create compute pass
-        var pass = try compute.makePass(function: library.gameOfLife_float4, constants: ["wrap": .bool(true)])
+        // Create compute pipeline
+        var pipeline = try compute.makePipeline(function: library.gameOfLife_float4, constants: ["wrap": .bool(true)])
 
         // Set up video writer
         let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Desktop/GameOfLife.mov")
@@ -71,15 +71,15 @@ enum GameOfLife {
             let inputTexture = frame.isMultiple(of: 2) ? textureA : textureB
             let outputTexture = frame.isMultiple(of: 2) ? textureB : textureA
 
-            // Set up arguments for the compute pass
-            pass.arguments.inputTexture = .texture(inputTexture)
-            pass.arguments.outputTexture = .texture(outputTexture)
+            // Set up arguments for the compute pipeline
+            pipeline.arguments.inputTexture = .texture(inputTexture)
+            pipeline.arguments.outputTexture = .texture(outputTexture)
 
-            // Run the compute pass and measure time
+            // Run the compute pipeline and measure time
             try timeit {
                 try compute.task { task in
                     try task { dispatch in
-                        try dispatch(pass: pass, threadgroupsPerGrid: MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
+                        try dispatch(pipeline: pipeline, threadgroupsPerGrid: MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
                     }
                 }
             }

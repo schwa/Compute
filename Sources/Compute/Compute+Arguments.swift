@@ -1,7 +1,7 @@
 import Metal
 
 public extension Compute {
-    /// A structure that holds and manages arguments for a compute pass.
+    /// A structure that holds and manages arguments for a compute pipeline.
     ///
     /// This structure uses dynamic member lookup to provide a convenient way to access and set arguments.
     @dynamicMemberLookup

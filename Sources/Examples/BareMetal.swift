@@ -47,7 +47,7 @@ enum BareMetalVsCompute {
             throw ComputeError.missingBinding("value")
         }
 
-        // Execute compute pass
+        // Execute compute pipeline
         guard let commandQueue = device.makeCommandQueue() else {
             throw ComputeError.resourceCreationFailure
         }
@@ -82,15 +82,15 @@ enum BareMetalVsCompute {
         // Create shader library from source
         let library = ShaderLibrary.source(source)
 
-        // Create compute pass for memset operation
-        var fill = try compute.makePass(function: library.memset)
+        // Create compute pipeline for memset operation
+        var fill = try compute.makePipeline(function: library.memset)
 
         // Set buffer and fill value arguments
         fill.arguments.output = .buffer(buffer)
         fill.arguments.value = .int(value)
 
-        // Execute compute pass
-        try compute.run(pass: fill, count: buffer.length)
+        // Execute compute pipeline
+        try compute.run(pipeline: fill, count: buffer.length)
     }
 
 }

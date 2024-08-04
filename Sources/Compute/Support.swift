@@ -28,26 +28,26 @@ public extension Compute {
         }
     }
 
-    /// Runs a compute pass with the specified arguments and thread count.
+    /// Runs a compute pipeline with the specified arguments and thread count.
     ///
-    /// This method provides a convenient way to execute a single compute pass with optional additional arguments.
+    /// This method provides a convenient way to execute a single compute pipeline with optional additional arguments.
     ///
     /// - Parameters:
-    ///   - pass: The compute pass to run.
-    ///   - arguments: Optional additional arguments to merge with the pass's existing arguments.
+    ///   - pipeline: The compute pipeline to run.
+    ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
     ///   - count: The number of threads to dispatch.
-    /// - Throws: Any error that occurs during the execution of the compute pass.
-    func run(pass: Pass, arguments: [String: Argument]? = nil, count: Int) throws {
-        var pass = pass
+    /// - Throws: Any error that occurs during the execution of the compute pipeline.
+    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, count: Int) throws {
+        var pipeline = pipeline
         if let arguments {
-            var existing = pass.arguments.arguments
+            var existing = pipeline.arguments.arguments
             existing.merge(arguments) { $1 }
-            pass.arguments = .init(arguments: existing)
+            pipeline.arguments = .init(arguments: existing)
         }
         try task { task in
             try task { dispatch in
-                let maxTotalThreadsPerThreadgroup = pass.computePipelineState.maxTotalThreadsPerThreadgroup
-                try dispatch(pass: pass, threads: MTLSize(width: count, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
+                let maxTotalThreadsPerThreadgroup = pipeline.computePipelineState.maxTotalThreadsPerThreadgroup
+                try dispatch(pipeline: pipeline, threads: MTLSize(width: count, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
             }
         }
     }

@@ -1,12 +1,12 @@
 import Metal
 
 public extension Compute {
-    /// Represents a compute pass, encapsulating all the information needed to execute a compute operation.
+    /// Represents a compute pipeline, encapsulating all the information needed to execute a compute operation.
     ///
-    /// A `Pass` includes the shader function, its arguments, and the associated compute pipeline state.
+    /// A `Pipeline` includes the shader function, its arguments, and the associated compute pipeline state.
     /// It provides the necessary context for dispatching compute operations on the GPU.
-    struct Pass {
-        /// The shader function associated with this pass.
+    struct Pipeline {
+        /// The shader function associated with this pipeline.
         public let function: ShaderFunction
 
         /// A dictionary mapping argument names to their binding indices.
@@ -18,13 +18,13 @@ public extension Compute {
         /// The compute pipeline state created from the shader function.
         public let computePipelineState: MTLComputePipelineState
 
-        /// Initializes a new compute pass.
+        /// Initializes a new compute pipeline.
         ///
         /// This initializer creates a compute pipeline state from the provided shader function and sets up the necessary bindings and arguments.
         ///
         /// - Parameters:
-        ///   - device: The Metal device on which the compute pass will be executed.
-        ///   - function: The shader function to be used in this pass.
+        ///   - device: The Metal device on which the compute pipeline will be executed.
+        ///   - function: The shader function to be used in this pipeline.
         ///   - constants: A dictionary of constant values to be used when compiling the shader function. Defaults to an empty dictionary.
         ///   - arguments: A dictionary of arguments to be passed to the shader function. Defaults to an empty dictionary.
         /// - Throws: An error if the compute pipeline state cannot be created or if there's an issue with the shader function.

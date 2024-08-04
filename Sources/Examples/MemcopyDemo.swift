@@ -55,27 +55,27 @@ enum MemcopyDemo {
         let compute = try Compute(device: device)
         // Create a shader library from the source code
         let library = ShaderLibrary.source(source)
-        // Create compute passes for each kernel function
-        let empty = try compute.makePass(function: library.empty)
-        let fill = try compute.makePass(function: library.fill, arguments: ["output": .buffer(bufferA)])
-        let memcopy = try compute.makePass(function: library.memcpy, arguments: ["input": .buffer(bufferA), "output": .buffer(bufferB)])
+        // Create compute pipelines for each kernel function
+        let empty = try compute.makePipeline(function: library.empty)
+        let fill = try compute.makePipeline(function: library.fill, arguments: ["output": .buffer(bufferA)])
+        let memcopy = try compute.makePipeline(function: library.memcpy, arguments: ["input": .buffer(bufferA), "output": .buffer(bufferB)])
 
         print("# Empty")
         // Run and time the empty kernel (baseline)
         try timeit(length: length) {
-            try compute.run(pass: empty, count: count)
+            try compute.run(pipeline: empty, count: count)
         }
 
         print("# Filling")
         // Run and time the fill kernel
         try timeit(length: length) {
-            try compute.run(pass: fill, count: count)
+            try compute.run(pipeline: fill, count: count)
         }
 
         print("# GPU memcpy")
         // Run and time the GPU memcpy kernel
         try timeit(length: length) {
-            try compute.run(pass: memcopy, count: count)
+            try compute.run(pipeline: memcopy, count: count)
         }
 
         print("# CPU memcpy")

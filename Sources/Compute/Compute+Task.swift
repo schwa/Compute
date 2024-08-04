@@ -50,7 +50,7 @@ public extension Compute {
 
     /// Handles the dispatching of compute operations to the GPU.
     ///
-    /// A `Dispatcher` is responsible for setting up and executing compute operations using the provided `Pass`.
+    /// A `Dispatcher` is responsible for setting up and executing compute operations using the provided `Pipeline`.
     struct Dispatcher {
         /// The label for this dispatcher, used for debugging and profiling.
         public let label: String?
@@ -64,30 +64,30 @@ public extension Compute {
         /// Dispatches a compute operation using threadgroups.
         ///
         /// - Parameters:
-        ///   - pass: The `Pass` containing the compute pipeline state and arguments.
+        ///   - pipeline: The `Pipeline` containing the compute pipeline state and arguments.
         ///   - threadgroupsPerGrid: The number of threadgroups to dispatch in each dimension.
         ///   - threadsPerThreadgroup: The number of threads in each threadgroup.
         /// - Throws: Any error that occurs during the binding of arguments or dispatch.
-        public func callAsFunction(pass: Pass, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
-            logger?.info("maxTotalThreadsPerThreadgroup: \(pass.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pass.computePipelineState.threadExecutionWidth)")
+        public func callAsFunction(pipeline: Pipeline, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
+            logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
             logger?.info("Dispatching \(String(describing: threadgroupsPerGrid)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
-            commandEncoder.setComputePipelineState(pass.computePipelineState)
-            try pass.bind(commandEncoder)
+            commandEncoder.setComputePipelineState(pipeline.computePipelineState)
+            try pipeline.bind(commandEncoder)
             commandEncoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
         }
 
         /// Dispatches a compute operation using a specific number of threads.
         ///
         /// - Parameters:
-        ///   - pass: The `Pass` containing the compute pipeline state and arguments.
+        ///   - pipeline: The `Pipeline` containing the compute pipeline state and arguments.
         ///   - threads: The total number of threads to dispatch in each dimension.
         ///   - threadsPerThreadgroup: The number of threads in each threadgroup.
         /// - Throws: Any error that occurs during the binding of arguments or dispatch.
-        public func callAsFunction(pass: Pass, threads: MTLSize, threadsPerThreadgroup: MTLSize) throws {
-            logger?.info("maxTotalThreadsPerThreadgroup: \(pass.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pass.computePipelineState.threadExecutionWidth)")
+        public func callAsFunction(pipeline: Pipeline, threads: MTLSize, threadsPerThreadgroup: MTLSize) throws {
+            logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
             logger?.info("Dispatching \(String(describing: threads)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
-            commandEncoder.setComputePipelineState(pass.computePipelineState)
-            try pass.bind(commandEncoder)
+            commandEncoder.setComputePipelineState(pipeline.computePipelineState)
+            try pipeline.bind(commandEncoder)
             commandEncoder.dispatchThreads(threads, threadsPerThreadgroup: threadsPerThreadgroup)
         }
     }

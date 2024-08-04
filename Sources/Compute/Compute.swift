@@ -55,17 +55,17 @@ public struct Compute {
         return try block(task)
     }
 
-    /// Creates a compute pass.
+    /// Creates a compute pipeline.
     ///
-    /// This method creates a `Pass` instance, which encapsulates a compute pipeline state and its associated arguments.
+    /// This method creates a `Pipeline` instance, which encapsulates a compute pipeline state and its associated arguments.
     ///
     /// - Parameters:
-    ///   - function: The shader function to use for the pass.
+    ///   - function: The shader function to use for the pipeline.
     ///   - constants: A dictionary of constant values to be used when compiling the shader function.
     ///   - arguments: A dictionary of arguments to be passed to the shader function.
-    /// - Returns: A new `Pass` instance.
+    /// - Returns: A new `Pipeline` instance.
     /// - Throws: Any error that occurs during the creation of the compute pipeline state.
-    public func makePass(function: ShaderFunction, constants: [String: Argument] = [:], arguments: [String: Argument] = [:]) throws -> Pass {
-        try Pass(device: device, function: function, constants: constants, arguments: arguments)
+    public func makePipeline(function: ShaderFunction, constants: [String: Argument] = [:], arguments: [String: Argument] = [:]) throws -> Pipeline {
+        try Pipeline(device: device, function: function, constants: constants, arguments: arguments)
     }
 }
