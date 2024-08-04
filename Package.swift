@@ -8,14 +8,19 @@ let package = Package(
     products: [
         .library(name: "Compute", targets: ["Compute"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/schwa/MetalCompilerPlugin", from: "0.0.3")
+    ],
     targets: [
         .target(name: "Compute"),
         .executableTarget(
             name: "Examples",
             dependencies: ["Compute"],
             resources: [
-                .process("Bundle.txt"),
-                .process("GameOfLife.metal"),
+                .copy("Bundle.txt")
+            ],
+            plugins: [
+                .plugin(name: "MetalCompilerPlugin", package: "MetalCompilerPlugin")
             ]
         ),
         .testTarget(name: "ComputeTests", dependencies: ["Compute"])

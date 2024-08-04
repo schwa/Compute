@@ -1,0 +1,24 @@
+{
+  "originHash" : "00f813be7a99871da308315569cc8736b6a61b19c3d87a23eb63cd2e63e3f1ea",
+  "pins" : [
+    {
+      "identity" : "metalcompilerplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/schwa/MetalCompilerPlugin",
+      "state" : {
+        "revision" : "8eee0b05069520306c93abe7ee9a333740d59007",
+        "version" : "0.0.3"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "41982a3656a71c768319979febd796c6fd111d5c",
+        "version" : "1.5.0"
+      }
+    }
+  ],
+  "version" : 3
+}

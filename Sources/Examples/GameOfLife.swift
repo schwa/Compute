@@ -27,7 +27,7 @@ enum GameOfLife {
         textureB.label = "texture-b"
 
         let compute = try Compute(device: device)
-        let library = ShaderLibrary.bundle(.module)
+        let library = ShaderLibrary.bundle(.module, name: "debug")
 
         let url = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Desktop/GameOfLife.mp4")
         let movieWriter = try TextureToVideoWriter(outputURL: url, size: CGSize(width: width, height: height))
