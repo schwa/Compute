@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 enum MaxValue {
 
     // Finds the maximum value in an array using a single-threaded Metal compute shader.
-    // This method is inefficient for large arrays and is provided as an example of a suboptimal approach.
+    // This method is very inefficient and is provided as an example of a suboptimal approach.
     static func badIdea(values: [Int32], expectedValue: Int32) throws {
         let source = #"""
             #include <metal_stdlib>
