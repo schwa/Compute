@@ -25,7 +25,8 @@ jobs:
           submodules: recursive
       - name: Build.
         run: swift build -v
-      - name: Run tests.
-        run: swift test -v
+        # disbable tests because they require macOS-15.
+    #   - name: Run tests.
+    #     run: swift test -v
     #   - name: Build examples.
     #     run: just build-examples
