@@ -78,7 +78,7 @@ struct ComputeTests {
             ]
         )
 
-        try compute.run(pipeline: pipeline, count: count)
+        try compute.run(pipeline: pipeline, width: count)
 
         bufferResult.contents().withMemoryRebound(to: Int32.self, capacity: count) { result in
             for i in 0..<count {

@@ -35,7 +35,7 @@ public extension Compute {
     /// - Parameters:
     ///   - pipeline: The compute pipeline to run.
     ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
-    ///   - count: The number of threads to dispatch.
+    ///   - width: The number of threads to dispatch.
     /// - Throws: Any error that occurs during the execution of the compute pipeline.
     func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int) throws {
         var pipeline = pipeline
@@ -59,7 +59,8 @@ public extension Compute {
     /// - Parameters:
     ///   - pipeline: The compute pipeline to run.
     ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
-    ///   - count: The number of threads to dispatch.
+    ///   - width: The number of threads to dispatch in the x-dimension.
+    ///   - height: The number of threads to dispatch in the y-dimension.
     /// - Throws: Any error that occurs during the execution of the compute pipeline.
     func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int, height: Int) throws {
         var pipeline = pipeline

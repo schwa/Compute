@@ -57,7 +57,7 @@ pipeline.arguments.inB = .buffer(inB)
 pipeline.arguments.result = .buffer(bufferResult)
 
 // Run the compute pipeline
-try compute.run(pipeline: pipeline, count: count)
+try compute.run(pipeline: pipeline, width: count)
 
 // Read back the results
 result = bufferResult.contents().withUnsafeBytes { $0.bindMemory(to: Int32.self) }
