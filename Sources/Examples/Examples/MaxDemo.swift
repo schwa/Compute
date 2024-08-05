@@ -173,7 +173,14 @@ enum MaxValue {
     static func main() throws {
         //        var values = Array(Array(repeating: Int32.zero, count: 1000))
         let expectedValue: Int32 = 123456789
-        var values = Array(Int32.zero ..< 100_000_000)
+
+        #if os(macOS)
+        let count: Int32 = 100_000_000
+        #else
+        let count: Int32 = 1_000_000
+        #endif
+
+        var values = Array(Int32.zero ..< count)
         values[Int.random(in: 0..<values.count)] = expectedValue
 
         timeit("Array.max()") {

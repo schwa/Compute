@@ -23,6 +23,7 @@ public struct Compute {
     public init(device: MTLDevice, logger: Logger? = nil) throws {
         self.device = device
         self.logger = logger
+        #if !targetEnvironment(simulator)
         if #available(macOS 15, iOS 18, *) {
             let logStateDescriptor = MTLLogStateDescriptor()
             logStateDescriptor.bufferSize = 16 * 1_024 * 1_024
@@ -44,6 +45,13 @@ public struct Compute {
             commandQueue.label = "Compute-MTLCommandQueue"
             self.commandQueue = commandQueue
         }
+        #else
+        guard let commandQueue = device.makeCommandQueue() else {
+            throw ComputeError.resourceCreationFailure
+        }
+        commandQueue.label = "Compute-MTLCommandQueue"
+        self.commandQueue = commandQueue
+        #endif
     }
 
     /// Executes a compute task.

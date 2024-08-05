@@ -34,30 +34,20 @@ public struct ShaderLibrary: Sendable {
     ///   - source: The Metal shader source code as a string.
     ///   - enableLogging: Enable Metal shader logging.
     /// - Returns: A new ShaderLibrary instance.
-    public static func source(_ source: String, enableLogging: Bool) -> Self {
+    public static func source(_ source: String, enableLogging: Bool = false) -> Self {
         Self { device in
             let options = MTLCompileOptions()
+            #if !targetEnvironment(simulator)
             if enableLogging {
-                if #available(macOS 15, iOS 17, *) {
+                if #available(macOS 15, iOS 18, *) {
                     options.enableLogging = true
                 }
                 else {
                     fatalError("Metal logging is not available on this platform.")
                 }
             }
+            #endif
             return try device.makeLibrary(source: source, options: options)
-        }
-    }
-
-    /// Creates a shader library from source code.
-    ///
-    /// - Parameters:
-    ///   - source: The Metal shader source code as a string.
-    ///   - options: MTLCompileOptions to use when making the library
-    /// - Returns: A new ShaderLibrary instance.
-    public static func source(_ source: String, options: MTLCompileOptions? = nil) -> Self {
-        Self { device in
-            try device.makeLibrary(source: source, options: options)
         }
     }
 

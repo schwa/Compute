@@ -1,11 +1,11 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import PackageDescription
 
 // swiftlint:disable:next explicit_top_level_acl
 let package = Package(
     name: "Compute",
-    platforms: [.macOS(.v14), .iOS(.v17)],
+    platforms: [.macOS(.v15), .iOS(.v18)],
     products: [
         .library(name: "Compute", targets: ["Compute"])
     ],
