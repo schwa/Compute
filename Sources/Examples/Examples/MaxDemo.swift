@@ -46,7 +46,7 @@ enum MaxValue {
     }
 
     // Finds the maximum value in an array using an atomic operation in a Metal compute shader.
-    // This method is more efficient than the single-threaded approach for large arrays.
+    // Despite all threads fighting over a single lock this version is still extremely fast.
     static func simpleAtomic(values: [Int32], expectedValue: Int32) throws {
         let source = #"""
             #include <metal_stdlib>
@@ -79,7 +79,6 @@ enum MaxValue {
         assert(result == expectedValue)
     }
 
-
     // Finds the maximum value in an array using a multi-pass approach in a Metal compute shader.
     // This method uses SIMD group operations for efficient parallel processing.
     // Note: this method is destructive and intermediate values are written to the input buffer.
@@ -95,9 +94,6 @@ enum MaxValue {
 
         // Get the number of threads per SIMD group
         uint threads_per_simdgroup [[threads_per_simdgroup]];
-
-        // Get the index of the current SIMD group within the threadgroup
-        uint simdgroup_index_in_threadgroup [[simdgroup_index_in_threadgroup]];
 
         kernel void maxValue(
             device int *input [[buffer(0)]],    // Input/output buffer
@@ -177,7 +173,7 @@ enum MaxValue {
     static func main() throws {
         //        var values = Array(Array(repeating: Int32.zero, count: 1000))
         let expectedValue: Int32 = 123456789
-        var values = Array(Int32.zero ..< 1_000_000)
+        var values = Array(Int32.zero ..< 100_000_000)
         values[Int.random(in: 0..<values.count)] = expectedValue
 
         timeit("Array.max()") {
