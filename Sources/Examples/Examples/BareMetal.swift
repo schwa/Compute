@@ -90,6 +90,6 @@ enum BareMetalVsCompute {
         fill.arguments.value = .int(value)
 
         // Execute compute pipeline
-        try compute.run(pipeline: fill, count: buffer.length)
+        try compute.run(pipeline: fill, width: buffer.length)
     }
 }

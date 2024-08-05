@@ -18,9 +18,10 @@ enum Examples {
             try ImageInvert.main()
         case "Checkerboard":
             try Checkerboard.main()
-
+        case "MaxValue":
+            try MaxValue.main()
         default:
-            try Checkerboard.main()
+            try MaxValue.main()
         }
     }
 }

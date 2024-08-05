@@ -22,12 +22,8 @@ enum HelloWorldDemo {
         logger.log("Hello world (from Swift!)")
         let compute = try Compute(device: device, logger: logger)
         let library: ShaderLibrary
-        if #available(macOS 15, *) {
-            library = ShaderLibrary.source(source, enableLogging: true)
-        } else {
-            library = ShaderLibrary.source(source)
-        }
+        library = ShaderLibrary.source(source, enableLogging: true)
         let helloWorld = try compute.makePipeline(function: library.hello_world)
-        try compute.run(pipeline: helloWorld, count: 1)
+        try compute.run(pipeline: helloWorld, width: 1)
     }
 }

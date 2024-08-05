@@ -63,19 +63,19 @@ enum MemcopyDemo {
         print("# Empty")
         // Run and time the empty kernel (baseline)
         try timeit(length: length) {
-            try compute.run(pipeline: empty, count: count)
+            try compute.run(pipeline: empty, width: count)
         }
 
         print("# Filling")
         // Run and time the fill kernel
         try timeit(length: length) {
-            try compute.run(pipeline: fill, count: count)
+            try compute.run(pipeline: fill, width: count)
         }
 
         print("# GPU memcpy")
         // Run and time the GPU memcpy kernel
         try timeit(length: length) {
-            try compute.run(pipeline: memcopy, count: count)
+            try compute.run(pipeline: memcopy, width: count)
         }
 
         print("# CPU memcpy")

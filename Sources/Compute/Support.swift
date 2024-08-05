@@ -37,7 +37,7 @@ public extension Compute {
     ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
     ///   - count: The number of threads to dispatch.
     /// - Throws: Any error that occurs during the execution of the compute pipeline.
-    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, count: Int) throws {
+    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int) throws {
         var pipeline = pipeline
         if let arguments {
             var existing = pipeline.arguments.arguments
@@ -47,7 +47,7 @@ public extension Compute {
         try task { task in
             try task { dispatch in
                 let maxTotalThreadsPerThreadgroup = pipeline.computePipelineState.maxTotalThreadsPerThreadgroup
-                try dispatch(pipeline: pipeline, threads: MTLSize(width: count, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
+                try dispatch(pipeline: pipeline, threads: MTLSize(width: width, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
             }
         }
     }
