@@ -6,8 +6,11 @@ public enum ComputeError: Error {
     /// - Parameter String: The name of the missing binding.
     case missingBinding(String)
 
+    case nonuniformThreadgroupsSizeNotSupported
+
     /// Indicates a failure in creating a required resource, such as a command queue or buffer.
     case resourceCreationFailure
+
 }
 
 public extension Compute {

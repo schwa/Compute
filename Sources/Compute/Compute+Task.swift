@@ -85,6 +85,11 @@ public extension Compute {
         ///   - threadsPerThreadgroup: The number of threads in each threadgroup.
         /// - Throws: Any error that occurs during the binding of arguments or dispatch.
         public func callAsFunction(pipeline: Pipeline, threads: MTLSize, threadsPerThreadgroup: MTLSize) throws {
+            let device = commandEncoder.device
+            guard device.supportsFamily(.apple4) || device.supportsFamily(.common3) || device.supportsFamily(.metal3) else {
+                throw ComputeError.nonuniformThreadgroupsSizeNotSupported
+            }
+
             logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
             logger?.info("Dispatching \(String(describing: threads)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
 
