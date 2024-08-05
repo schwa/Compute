@@ -7,7 +7,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 enum Checkerboard {
-    // Metal shader source code as a string
     static let source = #"""
         #include <metal_stdlib>
 

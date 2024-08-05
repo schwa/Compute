@@ -3,7 +3,6 @@ import Metal
 import os
 
 enum HelloWorldDemo {
-    // Metal shader source code as a string
     static let source = #"""
         #include <metal_stdlib>
         #include <metal_logging>
@@ -17,7 +16,6 @@ enum HelloWorldDemo {
 
     static func main() throws {
         let device = MTLCreateSystemDefaultDevice()!
-        // Create a Compute object with the Metal device
         let logger = Logger()
         logger.log("Hello world (from Swift!)")
         let compute = try Compute(device: device, logger: logger)

@@ -6,7 +6,6 @@ import os
 import UniformTypeIdentifiers
 
 enum ImageInvert {
-    // Metal shader source code as a string
     static let source = #"""
         #include <metal_stdlib>
 

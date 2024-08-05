@@ -2,6 +2,7 @@ import AVFoundation
 import Compute
 import CoreGraphics
 import Foundation
+import Metal
 
 public func getMachTimeInNanoseconds() -> UInt64 {
     var timebase = mach_timebase_info_data_t()
@@ -166,4 +167,52 @@ extension MTLTexture {
         CGImageDestinationAddImage(imageDestination, image, nil)
         CGImageDestinationFinalize(imageDestination)
     }
+}
+
+extension MTLBuffer {
+    func withUnsafeBytes<ResultType, ContentType>(_ body: (UnsafeBufferPointer<ContentType>) throws -> ResultType) rethrows -> ResultType {
+        try withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
+            try buffer.withMemoryRebound(to: ContentType.self, body)
+        }
+    }
+
+    func withUnsafeBytes<ResultType>(_ body: (UnsafeRawBufferPointer) throws -> ResultType) rethrows -> ResultType {
+        try body(UnsafeRawBufferPointer(start: contents(), count: length))
+    }
+}
+
+extension Array where Element: Equatable {
+
+    struct Run {
+        var element: Element
+        var count: Int
+    }
+
+    func rle() -> [Run] {
+
+        var lastElement: Element?
+        var runLength = 0
+
+        var runs: [Run] = []
+
+        for element in self {
+            if element == lastElement {
+                runLength += 1
+            }
+            else {
+                if let lastElement {
+                    runs.append(.init(element: lastElement, count: runLength))
+                }
+                lastElement = element
+                runLength = 1
+            }
+        }
+
+        if let lastElement {
+            runs.append(.init(element: lastElement, count: runLength))
+        }
+
+        return runs
+    }
+
 }
