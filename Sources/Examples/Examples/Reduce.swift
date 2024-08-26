@@ -1,5 +1,6 @@
 import Compute
 import Metal
+import MetalSupport
 
 let source = #"""
     #include <metal_stdlib>
@@ -7,23 +8,23 @@ let source = #"""
     using namespace metal;
 
     kernel void parallel_reduction_sum(
-    const device float* input [[buffer(0)]],
-    device float* output [[buffer(1)]],
-    uint thread_position_in_grid [[thread_position_in_grid]],
-    uint simdgroup_index_in_threadgroup [[simdgroup_index_in_threadgroup]],
-    uint threads_per_simdgroup [[threads_per_simdgroup]]
+        const device float* input [[buffer(0)]],
+        device float* output [[buffer(1)]],
+        uint thread_position_in_grid [[thread_position_in_grid]],
+        uint simdgroup_index_in_threadgroup [[simdgroup_index_in_threadgroup]],
+        uint threads_per_simdgroup [[threads_per_simdgroup]]
     )
     {
-    // load value
-    float value = input[thread_position_in_grid];
-    // Perform parallel reduction within SIMD group
-    for (uint offset = threads_per_simdgroup / 2; offset > 0; offset >>= 1) {
-    value += simd_shuffle_down(value, offset);
-    }
-    // Only the first thread in each SIMD group writes the result
-    if (simd_is_first()) {
-    output[simdgroup_index_in_threadgroup] = value;
-    }
+        // load value
+        float value = input[thread_position_in_grid];
+        // Perform parallel reduction within SIMD group
+        for (uint offset = threads_per_simdgroup / 2; offset > 0; offset >>= 1) {
+            value += simd_shuffle_down(value, offset);
+        }
+        // Only the first thread in each SIMD group writes the result
+        if (simd_is_first()) {
+            output[simdgroup_index_in_threadgroup] = value;
+        }
     }
 """#
 
@@ -44,20 +45,20 @@ struct Reduce {
         // Create a shader library from our source string
         let library = ShaderLibrary.source(source)
         // Create a compute pass from our function
-        var pass = try compute.makePass(function: library.parallel_reduction_sum)
+        var pipeline = try compute.makePipeline(function: library.parallel_reduction_sum)
         // Save the threadExecutionWidth (always 32 on current Apple Silicon). The number of threads that work per simd group.
-        let threadExecutionWidth = pass.computePipelineState.threadExecutionWidth
+        let threadExecutionWidth = pipeline.computePipelineState.threadExecutionWidth
         // We'll be running this until we have one count elft
         while count > 1 {
             print(count)
             // Load our buffers into the pass
-            pass.arguments.input = .buffer(input)
-            pass.arguments.output = .buffer(output)
+            pipeline.arguments.input = .buffer(input)
+            pipeline.arguments.output = .buffer(output)
             // Perform one dispatch on the pass
             try compute.task { task in
                 try task { dispatch in
-                    let maxTotalThreadsPerThreadgroup = pass.computePipelineState.maxTotalThreadsPerThreadgroup
-                    try dispatch(pass: pass, threads: MTLSize(width: count), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup))
+                    let maxTotalThreadsPerThreadgroup = pipeline.computePipelineState.maxTotalThreadsPerThreadgroup
+                    try dispatch(pipeline: pipeline, threads: MTLSize(width: count), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup))
                 }
             }
             // For the next run we'll be doing less work... The output buffer contains input.count / threadExecutionWidth results...

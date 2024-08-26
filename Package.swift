@@ -17,7 +17,10 @@ let package = Package(
         .target(name: "Compute"),
         .executableTarget(
             name: "Examples",
-            dependencies: ["Compute"],
+            dependencies: [
+                "Compute",
+                .product(name: "MetalSupport", package: "SwiftGraphics"),
+            ],
             resources: [
                 .copy("Bundle.txt"),
                 .process("Resources/Media.xcassets")
