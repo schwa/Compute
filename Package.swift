@@ -7,10 +7,11 @@ let package = Package(
     name: "Compute",
     platforms: [.macOS(.v15), .iOS(.v18)],
     products: [
-        .library(name: "Compute", targets: ["Compute"])
+        .library(name: "Compute", targets: ["Compute"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/schwa/MetalCompilerPlugin", from: "0.0.3")
+        .package(url: "https://github.com/schwa/MetalCompilerPlugin", branch: "jwight/logging"),
+        .package(url: "https://github.com/schwa/SwiftGraphics", branch: "jwight/develop")
     ],
     targets: [
         .target(name: "Compute"),

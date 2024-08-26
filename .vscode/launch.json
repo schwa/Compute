@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:Compute}",
+            "name": "Debug Examples",
+            "program": "${workspaceFolder:Compute}/.build/debug/Examples",
+            "preLaunchTask": "swift: Build Debug Examples"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:Compute}",
+            "name": "Release Examples",
+            "program": "${workspaceFolder:Compute}/.build/release/Examples",
+            "preLaunchTask": "swift: Build Release Examples"
+        }
+    ]
+}
