@@ -7,12 +7,13 @@ let source = #"""
 
     using namespace metal;
 
+    uint thread_position_in_grid [[thread_position_in_grid]];
+    uint simdgroup_index_in_threadgroup [[simdgroup_index_in_threadgroup]];
+    uint threads_per_simdgroup [[threads_per_simdgroup]];
+
     kernel void parallel_reduction_sum(
-        const device float* input [[buffer(0)]],
-        device float* output [[buffer(1)]],
-        uint thread_position_in_grid [[thread_position_in_grid]],
-        uint simdgroup_index_in_threadgroup [[simdgroup_index_in_threadgroup]],
-        uint threads_per_simdgroup [[threads_per_simdgroup]]
+        constant float* input [[buffer(0)]],
+        device float* output [[buffer(1)]]
     )
     {
         // load value
@@ -29,10 +30,9 @@ let source = #"""
 """#
 
 struct Reduce {
-    // swiftlint:disable:next force_unwrapping
-    let device = MTLCreateSystemDefaultDevice()!
-
-    func main() throws {
+    // TODO: NOT WORKING.
+    static func main() throws {
+        let device = MTLCreateSystemDefaultDevice()!
         // Create N values and sum them up in the CPU...
         var count = 5000
         let values = (0..<count).map { Float($0 + 1) }
