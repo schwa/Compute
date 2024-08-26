@@ -6,7 +6,7 @@ import os
 import SwiftUI
 import UniformTypeIdentifiers
 
-enum Checkerboard {
+enum Checkerboard: Demo {
     static let source = #"""
         #include <metal_stdlib>
 
@@ -41,7 +41,7 @@ enum Checkerboard {
         }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let logger = Logger()
         let compute = try Compute(device: device, logger: logger)

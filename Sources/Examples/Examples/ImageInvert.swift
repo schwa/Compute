@@ -5,7 +5,7 @@ import MetalKit
 import os
 import UniformTypeIdentifiers
 
-enum ImageInvert {
+enum ImageInvert: Demo {
     static let source = #"""
         #include <metal_stdlib>
 
@@ -23,7 +23,7 @@ enum ImageInvert {
         }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let logger = Logger()
         let compute = try Compute(device: device, logger: logger)
@@ -31,7 +31,7 @@ enum ImageInvert {
         var invertImage = try compute.makePipeline(function: library.invertImage, constants: ["isLinear": .bool(true)])
 
         let textureLoader = MTKTextureLoader(device: device)
-        let inputTexture = try textureLoader.newTexture(name: "baboon", scaleFactor: 1, bundle: .module, options: [.SRGB: false])
+        let inputTexture = try await textureLoader.newTexture(name: "baboon", scaleFactor: 1, bundle: .module, options: [.SRGB: false])
 
         let outputTextureDescriptor = MTLTextureDescriptor()
         outputTextureDescriptor.width = inputTexture.width

@@ -2,7 +2,7 @@ import Compute
 import Metal
 import os
 
-enum HelloWorldDemo {
+enum HelloWorldDemo: Demo {
     static let source = #"""
         #include <metal_stdlib>
         #include <metal_logging>
@@ -14,7 +14,7 @@ enum HelloWorldDemo {
         }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let logger = Logger()
         logger.log("Hello world (from Swift!)")

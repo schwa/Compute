@@ -5,8 +5,13 @@ import Foundation
 import Metal
 import os
 
-enum GameOfLife {
-    static func main(density: Double = 0.5, width: Int = 256, height: Int = 256, frames: Int = 1_200, framesPerSecond: Int = 60) async throws {
+enum GameOfLife: Demo {
+
+    static func main() async throws {
+        try await run()
+    }
+
+    static func run(density: Double = 0.5, width: Int = 256, height: Int = 256, frames: Int = 1_200, framesPerSecond: Int = 60) async throws {
         let logger: Logger? = Logger()
 
         // Calculate total number of pixels

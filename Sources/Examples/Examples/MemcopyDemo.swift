@@ -34,7 +34,7 @@ enum MemcopyDemo {
         }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         // Get the default Metal device
         let device = MTLCreateSystemDefaultDevice()!
         // Set count to maximum value of UInt32

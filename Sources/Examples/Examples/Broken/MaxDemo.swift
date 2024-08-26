@@ -5,7 +5,7 @@ import MetalKit
 import os
 import UniformTypeIdentifiers
 
-enum MaxValue {
+enum MaxValue: Demo {
 
     // Finds the maximum value in an array using a single-threaded Metal compute shader.
     // This method is very inefficient and is provided as an example of a suboptimal approach.
@@ -170,7 +170,7 @@ enum MaxValue {
         assert(result == expectedValue)
     }
 
-    static func main() throws {
+    static func main() async throws {
         //        var values = Array(Array(repeating: Int32.zero, count: 1000))
         let expectedValue: Int32 = 123456789
 

@@ -29,9 +29,9 @@ let source = #"""
     }
 """#
 
-struct Reduce {
+struct Reduce: Demo {
     // TODO: NOT WORKING.
-    static func main() throws {
+    static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         // Create N values and sum them up in the CPU...
         var count = 5000

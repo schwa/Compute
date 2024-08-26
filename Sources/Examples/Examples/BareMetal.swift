@@ -1,7 +1,7 @@
 import Compute
 import Metal
 
-enum BareMetalVsCompute {
+enum BareMetalVsCompute: Demo {
     static let source = #"""
         #include <metal_stdlib>
 
@@ -14,7 +14,7 @@ enum BareMetalVsCompute {
         }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         // Get the default Metal device
         let device = MTLCreateSystemDefaultDevice()!
         // Create a buffer and confirm it is zeroed

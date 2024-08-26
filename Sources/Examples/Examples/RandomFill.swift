@@ -6,7 +6,7 @@ import MetalKit
 
 // swiftlint:disable force_unwrapping
 
-struct RandomFill {
+struct RandomFill: Demo {
     static let source = #"""
     #include <metal_stdlib>
     #include <simd/simd.h>
@@ -38,7 +38,7 @@ struct RandomFill {
     }
     """#
 
-    static func main() throws {
+    static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
 
         let outputTextureDescriptor = MTLTextureDescriptor()
