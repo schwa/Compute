@@ -69,8 +69,7 @@ public extension Compute {
         ///   - threadsPerThreadgroup: The number of threads in each threadgroup.
         /// - Throws: Any error that occurs during the binding of arguments or dispatch.
         public func callAsFunction(pipeline: Pipeline, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
-            logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
-            logger?.info("Dispatching \(String(describing: threadgroupsPerGrid)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
+            logger?.info("Dispatching \(threadgroupsPerGrid.shortDescription) threadgroups per grid with \(threadsPerThreadgroup.shortDescription) threads per threadgroup. maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth).")
 
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             try pipeline.bind(commandEncoder)
@@ -90,8 +89,7 @@ public extension Compute {
                 throw ComputeError.nonuniformThreadgroupsSizeNotSupported
             }
 
-            logger?.info("maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth)")
-            logger?.info("Dispatching \(String(describing: threads)) threads with \(String(describing: threadsPerThreadgroup)) threads per threadgroup")
+            logger?.info("Dispatch - threads: \(threads.shortDescription), threadsPerThreadgroup \(threadsPerThreadgroup.shortDescription), maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth).")
 
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)

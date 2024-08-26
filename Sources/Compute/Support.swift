@@ -84,3 +84,9 @@ public extension Compute {
         }
     }
 }
+
+extension MTLSize {
+    var shortDescription: String {
+        return "[\(width), \(height), \(depth)]"
+    }
+}

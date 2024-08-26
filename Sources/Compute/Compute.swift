@@ -72,7 +72,6 @@ public struct Compute {
         commandBuffer.label = "\(label ?? "Unlabeled")-MTLCommandBuffer"
         defer {
             commandBuffer.commit()
-            logger?.log("waitUntilCompleted")
             commandBuffer.waitUntilCompleted()
         }
         let task = Task(label: label, logger: logger, commandBuffer: commandBuffer)

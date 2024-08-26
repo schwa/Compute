@@ -41,12 +41,18 @@ public extension Compute {
             self.encode = encode
             self.constantValue = constantValue
         }
+    }
+
+}
+
+
+public extension Compute.Argument {
 
         /// Creates an integer argument.
         ///
         /// - Parameter value: The integer value.
         /// - Returns: An `Argument` instance representing the integer.
-        public static func int(_ value: some BinaryInteger) -> Self {
+        static func int(_ value: some BinaryInteger) -> Self {
             .init { encoder, index in
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
@@ -90,7 +96,7 @@ public extension Compute {
         ///
         /// - Parameter value: The float value.
         /// - Returns: An `Argument` instance representing the float.
-        public static func float(_ value: Float) -> Self {
+        static func float(_ value: Float) -> Self {
             .init { encoder, index in
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
@@ -113,7 +119,7 @@ public extension Compute {
         ///
         /// - Parameter value: The boolean value.
         /// - Returns: An `Argument` instance representing the boolean.
-        public static func bool(_ value: Bool) -> Self {
+        static func bool(_ value: Bool) -> Self {
             .init { encoder, index in
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
@@ -138,7 +144,7 @@ public extension Compute {
         ///   - buffer: The Metal buffer to be used as an argument.
         ///   - offset: The offset within the buffer. Defaults to 0.
         /// - Returns: An `Argument` instance representing the buffer.
-        public static func buffer(_ buffer: MTLBuffer, offset: Int = 0) -> Self {
+        static func buffer(_ buffer: MTLBuffer, offset: Int = 0) -> Self {
             .init { encoder, index in
                 encoder.setBuffer(buffer, offset: offset, index: index)
             }
@@ -151,7 +157,7 @@ public extension Compute {
         ///
         /// - Parameter texture: The Metal texture to be used as an argument.
         /// - Returns: An `Argument` instance representing the texture.
-        public static func texture(_ texture: MTLTexture) -> Self {
+        static func texture(_ texture: MTLTexture) -> Self {
             Self { encoder, index in
                 encoder.setTexture(texture, index: index)
             }
@@ -164,7 +170,7 @@ public extension Compute {
         ///
         /// - Parameter value: The vector value.
         /// - Returns: An `Argument` instance representing the boolean.
-        public static func vector<V>(_ value: V) -> Self where V: SIMD {
+        static func vector<V>(_ value: V) -> Self where V: SIMD {
             .init { encoder, index in
                 withUnsafeBytes(of: value) { buffer in
                     guard let baseAddress = buffer.baseAddress else {
@@ -182,7 +188,7 @@ public extension Compute {
         ///
         /// - Parameter value: The vector value.
         /// - Returns: An `Argument` instance representing the boolean.
-        public static func float4(_ value: SIMD4<Float>) -> Self {
+        static func float4(_ value: SIMD4<Float>) -> Self {
             .vector(value)
         }
 
@@ -190,7 +196,7 @@ public extension Compute {
         ///
         /// - Parameter value: The vector value.
         /// - Returns: An `Argument` instance representing the boolean.
-        public static func color(_ value: Color) throws -> Self {
+        static func color(_ value: Color) throws -> Self {
             let cgColor = value.resolve(in: .init()).cgColor
             guard let colorSpace = CGColorSpace(name: CGColorSpace.genericRGBLinear) else {
                 throw ComputeError.resourceCreationFailure
@@ -204,5 +210,27 @@ public extension Compute {
             let vector = SIMD4<Float>([Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3])])
             return .vector(vector)
         }
+
+        /// Creates an argument from a threadgroup memory length
+        static func threadgroupMemoryLength(_ value: Int) -> Self {
+            Self { encoder, index in
+                encoder.setThreadgroupMemoryLength(value, index: index)
+            }
+            constantValue: { _, _ in
+                fatalError("Unimplemented")
+            }
+        }
+
+    static func buffer<T>(_ array: [T], offset: Int = 0) -> Self {
+        .init { encoder, index in
+            let buffer = array.withUnsafeBufferPointer { buffer in
+                encoder.device.makeBuffer(bytes: buffer.baseAddress!, length: buffer.count)
+            }
+            encoder.setBuffer(buffer, offset: offset, index: index)
+        }
+        constantValue: { _, _ in
+            fatalError("Unimplemented")
+        }
     }
+
 }

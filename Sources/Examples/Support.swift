@@ -216,3 +216,32 @@ extension Array where Element: Equatable {
     }
 
 }
+
+extension Array where Element == UInt32 {
+    func prefixSum() -> [UInt32] {
+        var output = Array(repeating: UInt32.zero, count: count)
+        for j in 1..<count {
+            output[j] = self[j-1] + output[j-1]
+        }
+        return output
+    }
+}
+
+// MARK: -
+
+func log2(_ value: UInt32) -> UInt32 {
+    UInt32(31 - value.leadingZeroBitCount)
+}
+
+func log2(_ value: Int) -> Int {
+    precondition(value > 0, "log2 is only defined for positive numbers")
+    return 63 - value.leadingZeroBitCount
+}
+
+// MARK: -
+
+infix operator **: MultiplicationPrecedence
+
+func ** (base: Int, exponent: Int) -> Int {
+    return Int(pow(Double(base), Double(exponent)))
+}
