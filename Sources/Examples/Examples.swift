@@ -16,7 +16,7 @@ enum Examples {
             ImageInvert.self,
             MaxValue.self,
             RandomFill.self,
-            Reduce.self,
+            SIMDReduce.self,
             ThreadgroupLoggingDemo.self,
         ]
 
