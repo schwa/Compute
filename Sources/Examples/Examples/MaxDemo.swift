@@ -41,7 +41,6 @@ enum MaxValue: Demo {
             try compute.run(pipeline: maxValue, width: 1)
         }
         let result = output.contents().assumingMemoryBound(to: Int32.self)[0]
-        print(result)
         assert(result == expectedValue)
     }
 
@@ -75,7 +74,6 @@ enum MaxValue: Demo {
             try compute.run(pipeline: maxValue, width: values.count)
         }
         let result = output.contents().assumingMemoryBound(to: Int32.self)[0]
-        print(result)
         assert(result == expectedValue)
     }
 
@@ -84,6 +82,7 @@ enum MaxValue: Demo {
     // This method uses SIMD group operations for efficient parallel processing.
     // Note: this method is destructive and intermediate values are written to the input buffer.
     // TODO: This method may occasionally fail for reasons that are currently unclear.
+    // NOTE: Does NOT seem to be failing on M1 Ultra. 8/30/2024.
     static func multipass(values: [Int32], expectedValue: Int32) throws {
         let source = #"""
         #include <metal_stdlib>
@@ -167,7 +166,6 @@ enum MaxValue: Demo {
         }
 
         let result = input.contents().assumingMemoryBound(to: Int32.self)[0]
-        print(result)
         assert(result == expectedValue)
     }
 
@@ -175,20 +173,28 @@ enum MaxValue: Demo {
         //        var values = Array(Array(repeating: Int32.zero, count: 1000))
         let expectedValue: Int32 = 123456789
 
+
         #if os(macOS)
-        let count: Int32 = 1_000_000
+        let count: Int32 = .random(in: 50_000_000 ... 80_000_000)
         #else
         let count: Int32 = 1_000_000
         #endif
 
-        var values = Array(Int32.zero ..< count)
-        values[Int.random(in: 0..<values.count)] = expectedValue
+        let values = timeit("Generating \(count) values") {
+            var values = Array(Int32.zero ..< count)
+            values[Int.random(in: 0..<values.count)] = expectedValue
+            return values
+        }
 
         timeit("Array.max()") {
-            print(values.max()!)
+            assert(values.max()! == expectedValue)
         }
         try badIdea(values: values, expectedValue: expectedValue)
         try simpleAtomic(values: values, expectedValue: expectedValue)
-        try multipass(values: values, expectedValue: expectedValue)
+
+        for run in 0..<200 {
+            print("Run: #\(run) .................................................")
+            try multipass(values: values, expectedValue: expectedValue)
+        }
     }
 }
