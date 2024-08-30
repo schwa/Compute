@@ -3,7 +3,7 @@
 
 using namespace metal;
 
-uint3 thread_position_in_grid [[thread_position_in_grid]];
+uint thread_position_in_grid [[thread_position_in_grid]];
 
 [[kernel]]
 void bitonicSort(
@@ -13,9 +13,8 @@ void bitonicSort(
     constant uint &stepIndex [[buffer(3)]],
     device uint *entries [[buffer(4)]]
 ) {
-    const uint index = thread_position_in_grid.x;
-    const uint hIndex = index & (groupWidth - 1);
-    const uint indexLeft = hIndex + (groupHeight + 1) * (index / groupWidth);
+    const uint hIndex = thread_position_in_grid & (groupWidth - 1);
+    const uint indexLeft = hIndex + (groupHeight + 1) * (thread_position_in_grid / groupWidth);
     const uint stepSize = stepIndex == 0 ? groupHeight - 2 * hIndex : (groupHeight + 1) / 2;
     const uint indexRight = indexLeft + stepSize;
     // Exit if out of bounds (for non-power of 2 input sizes)
