@@ -30,6 +30,37 @@ public extension Compute {
             }
         }
     }
+}
+
+public extension Compute {
+    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, threads: MTLSize, threadsPerThreadgroup: MTLSize) throws {
+        var pipeline = pipeline
+        if let arguments {
+            var existing = pipeline.arguments.arguments
+            existing.merge(arguments) { $1 }
+            pipeline.arguments = .init(arguments: existing)
+        }
+        try task { task in
+            try task { dispatch in
+                try dispatch(pipeline: pipeline, threads: threads, threadsPerThreadgroup: threadsPerThreadgroup)
+            }
+        }
+    }
+
+    func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
+        var pipeline = pipeline
+        if let arguments {
+            var existing = pipeline.arguments.arguments
+            existing.merge(arguments) { $1 }
+            pipeline.arguments = .init(arguments: existing)
+        }
+        try task { task in
+            try task { dispatch in
+                try dispatch(pipeline: pipeline, threadgroupsPerGrid: threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+            }
+        }
+    }
+
 
     /// Runs a compute pipeline with the specified arguments and thread count.
     ///
@@ -40,6 +71,7 @@ public extension Compute {
     ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
     ///   - width: The number of threads to dispatch.
     /// - Throws: Any error that occurs during the execution of the compute pipeline.
+    @available(*, deprecated, message: "Deprecated")
     func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int) throws {
         var pipeline = pipeline
         if let arguments {
@@ -55,16 +87,7 @@ public extension Compute {
         }
     }
 
-    /// Runs a compute pipeline with the specified arguments and thread count.
-    ///
-    /// This method provides a convenient way to execute a single compute pipeline with optional additional arguments.
-    ///
-    /// - Parameters:
-    ///   - pipeline: The compute pipeline to run.
-    ///   - arguments: Optional additional arguments to merge with the pipeline's existing arguments.
-    ///   - width: The number of threads to dispatch in the x-dimension.
-    ///   - height: The number of threads to dispatch in the y-dimension.
-    /// - Throws: Any error that occurs during the execution of the compute pipeline.
+    @available(*, deprecated, message: "Deprecated")
     func run(pipeline: Pipeline, arguments: [String: Argument]? = nil, width: Int, height: Int) throws {
         var pipeline = pipeline
         if let arguments {
@@ -85,7 +108,7 @@ public extension Compute {
     }
 }
 
-extension MTLSize {
+internal extension MTLSize {
     var shortDescription: String {
         return "[\(width), \(height), \(depth)]"
     }

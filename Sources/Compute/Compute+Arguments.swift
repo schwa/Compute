@@ -37,7 +37,7 @@ public extension Compute {
         /// A closure that sets the argument as a constant value in a function constant values object.
         internal var constantValue: (MTLFunctionConstantValues, String) -> Void
 
-        internal init(encode: @escaping (MTLComputeCommandEncoder, Int) -> Void, constantValue: @escaping (MTLFunctionConstantValues, String) -> Void) {
+        public init(encode: @escaping (MTLComputeCommandEncoder, Int) -> Void, constantValue: @escaping (MTLFunctionConstantValues, String) -> Void) {
             self.encode = encode
             self.constantValue = constantValue
         }

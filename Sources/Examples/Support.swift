@@ -3,6 +3,7 @@ import Compute
 import CoreGraphics
 import Foundation
 import Metal
+import MetalSupport
 
 public func getMachTimeInNanoseconds() -> UInt64 {
     var timebase = mach_timebase_info_data_t()
@@ -229,13 +230,15 @@ extension Array where Element == UInt32 {
 
 // MARK: -
 
-func log2(_ value: UInt32) -> UInt32 {
-    UInt32(31 - value.leadingZeroBitCount)
+func log2(_ value: UInt32, ceiling: Bool = false) -> UInt32 {
+    let result = UInt32(31 - value.leadingZeroBitCount)
+    return ceiling && (1 << result) < value ? result + 1 : result
 }
 
-func log2(_ value: Int) -> Int {
+func log2(_ value: Int, ceiling: Bool = false) -> Int {
     precondition(value > 0, "log2 is only defined for positive numbers")
-    return 63 - value.leadingZeroBitCount
+    let result = 63 - value.leadingZeroBitCount
+    return ceiling && (1 << result) < value ? result + 1 : result
 }
 
 // MARK: -
@@ -244,4 +247,37 @@ infix operator **: MultiplicationPrecedence
 
 func ** (base: Int, exponent: Int) -> Int {
     return Int(pow(Double(base), Double(exponent)))
+}
+
+func ** (base: UInt32, exponent: UInt32) -> UInt32 {
+    return UInt32(pow(Double(base), Double(exponent)))
+}
+
+extension Array {
+    init(_ buffer: MTLBuffer) {
+        let pointer = buffer.contents().bindMemory(to: Element.self, capacity: buffer.length / MemoryLayout<Element>.size)
+        let buffer = UnsafeBufferPointer<Element>(start: pointer, count: buffer.length / MemoryLayout<Element>.size)
+        self = Array(buffer)
+    }
+
+}
+
+func ceildiv <T>(_ x: T, _ y: T) -> T where T: BinaryInteger {
+    (x + y - 1) / y
+}
+
+extension Array {
+    init(_ buffer: TypedMTLBuffer<Element>) {
+        self = buffer.withUnsafeMTLBuffer { buffer in
+            Array(buffer)
+        }
+    }
+}
+
+extension Compute.Argument {
+    static func buffer<T>(_ data: TypedMTLBuffer<T>) -> Self {
+        data.withUnsafeMTLBuffer { buffer in
+            return .buffer(buffer)
+        }
+    }
 }

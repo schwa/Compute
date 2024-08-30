@@ -17,6 +17,7 @@ enum Examples {
             MaxValue.self,
             Reduce.self,
             RandomFill.self,
+            ThreadgroupLoggingDemo.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil
