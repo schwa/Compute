@@ -52,12 +52,12 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "PrefixSum3"
-            isEnabled = "NO">
+            argument = "MaxValue"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "all"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "ThreadgroupLoggingDemo"

@@ -79,48 +79,6 @@ enum MaxValue: Demo {
         assert(result == expectedValue)
     }
 
-    static func complexAtomic(values: [Int32], expectedValue: Int32) throws {
-        let source = #"""
-            #include <metal_stdlib>
-
-            using namespace metal;
-
-            uint thread_position_in_grid [[thread_position_in_grid]];
-            uint thread_position_in_threadgroup [[thread_position_in_threadgroup]];
-
-            kernel void maxValue(
-                const device uint *input [[buffer(0)]],
-                device atomic_uint *output [[buffer(1)]]
-            ) {
-                threadgroup atomic_uint temp = -1;
-
-                const uint value = input[thread_position_in_grid];
-                atomic_fetch_max_explicit(&temp, value, memory_order_relaxed);
-                threadgroup_barrier(mem_flags::mem_threadgroup);
-                if (thread_position_in_threadgroup == 0) {
-                    //auto value2 = atomic_load_explicit(&temp, memory_order_relaxed);
-                    //atomic_fetch_max_explicit(output, value2, memory_order_relaxed);
-                }
-            }
-        """#
-        let device = MTLCreateSystemDefaultDevice()!
-        let input = device.makeBuffer(bytes: values, length: MemoryLayout<Int32>.stride * values.count, options: [])!
-        let output = device.makeBuffer(length: MemoryLayout<Int32>.size)!
-        let compute = try Compute(device: device)
-        let library = ShaderLibrary.source(source)
-        var maxValue = try compute.makePipeline(function: library.maxValue)
-        maxValue.arguments.input = .buffer(input)
-        maxValue.arguments.output = .buffer(output)
-        try timeit(#function) {
-            try compute.run(pipeline: maxValue, width: values.count)
-        }
-        let result = output.contents().assumingMemoryBound(to: Int32.self)[0]
-        print(result)
-        assert(result == expectedValue)
-    }
-
-
-
 
     // Finds the maximum value in an array using a multi-pass approach in a Metal compute shader.
     // This method uses SIMD group operations for efficient parallel processing.
@@ -218,7 +176,7 @@ enum MaxValue: Demo {
         let expectedValue: Int32 = 123456789
 
         #if os(macOS)
-        let count: Int32 = 100_000_000
+        let count: Int32 = 1_000_000
         #else
         let count: Int32 = 1_000_000
         #endif
@@ -229,8 +187,8 @@ enum MaxValue: Demo {
         timeit("Array.max()") {
             print(values.max()!)
         }
-        try multipass(values: values, expectedValue: expectedValue)
-        try simpleAtomic(values: values, expectedValue: expectedValue)
         try badIdea(values: values, expectedValue: expectedValue)
+        try simpleAtomic(values: values, expectedValue: expectedValue)
+        try multipass(values: values, expectedValue: expectedValue)
     }
 }
