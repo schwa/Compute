@@ -8,25 +8,32 @@ protocol Demo {
 enum Examples {
     static func main() async throws {
         let demos: [Demo.Type] = [
-            IndexTest.self,
-            BufferFill.self,
-            GameOfLife.self,
             BareMetalVsCompute.self,
+            BufferFill.self,
+            Checkerboard.self,
+            GameOfLife.self,
             HelloWorldDemo.self,
             ImageInvert.self,
-            Checkerboard.self,
             MaxValue.self,
-            Reduce.self,
             RandomFill.self,
+            Reduce.self,
             ThreadgroupLoggingDemo.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil
         if let argument {
-            guard let demo = demos.first(where: { String(describing: $0).lowercased() == argument }) else {
-                fatalError("No demo with name: \(argument)")
+            if argument == "all" {
+                for demo in demos {
+                    print("\(demo)")
+                    try await demo.main()
+                }
             }
-            try await demo.main()
+            else {
+                guard let demo = demos.first(where: { String(describing: $0).lowercased() == argument }) else {
+                    fatalError("No demo with name: \(argument)")
+                }
+                try await demo.main()
+            }
         }
         else {
             for (index, demo) in demos.enumerated() {
