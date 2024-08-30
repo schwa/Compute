@@ -281,3 +281,7 @@ extension Compute.Argument {
         }
     }
 }
+
+func nextPowerOfTwo(_ n: Int) -> Int {
+    return Int(pow(2.0, Double(Int(log2(Double(n))).advanced(by: 1))) + 0.5)
+}

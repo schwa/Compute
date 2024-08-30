@@ -15,9 +15,11 @@ enum Examples {
             HelloWorldDemo.self,
             ImageInvert.self,
             MaxValue.self,
+            MemcopyDemo.self,
             RandomFill.self,
             SIMDReduce.self,
-            ThreadgroupLoggingDemo.self,
+            ThreadgroupLogging.self,
+            BitonicSortDemo.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil

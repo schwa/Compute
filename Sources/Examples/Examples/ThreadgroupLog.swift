@@ -2,7 +2,7 @@ import Compute
 import Metal
 import os
 
-enum ThreadgroupLoggingDemo: Demo {
+enum ThreadgroupLogging: Demo {
     static let source = #"""
         #include <metal_stdlib>
         #include <metal_logging>

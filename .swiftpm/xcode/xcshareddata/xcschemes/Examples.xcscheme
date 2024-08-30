@@ -39,6 +39,7 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
+      enableGPUShaderValidationMode = "2"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
@@ -52,7 +53,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "SIMDReduce"
+            argument = "BitonicSortDemo"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

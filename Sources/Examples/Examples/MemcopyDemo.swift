@@ -1,7 +1,7 @@
 import Compute
 import Metal
 
-enum MemcopyDemo {
+enum MemcopyDemo: Demo {
     // Metal shader source code as a string
     static let source = #"""
         #include <metal_stdlib>

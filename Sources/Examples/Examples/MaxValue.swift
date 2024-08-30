@@ -175,7 +175,7 @@ enum MaxValue: Demo {
 
 
         #if os(macOS)
-        let count: Int32 = .random(in: 50_000_000 ... 80_000_000)
+        let count: Int32 = 1_000_000
         #else
         let count: Int32 = 1_000_000
         #endif
