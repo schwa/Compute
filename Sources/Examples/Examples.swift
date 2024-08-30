@@ -8,7 +8,6 @@ protocol Demo {
 enum Examples {
     static func main() async throws {
         let demos: [Demo.Type] = [
-            PrefixSum.self,
             GameOfLife.self,
             BareMetalVsCompute.self,
             HelloWorldDemo.self,
