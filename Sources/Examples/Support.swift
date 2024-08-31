@@ -285,3 +285,19 @@ extension Compute.Argument {
 func nextPowerOfTwo(_ n: Int) -> Int {
     return Int(pow(2.0, Double(Int(log2(Double(n))).advanced(by: 1))) + 0.5)
 }
+
+extension MTLSize: @retroactive ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: Int...) {
+        switch elements.count {
+        case 1:
+            self = .init(elements[0], 1, 1)
+        case 2:
+            self = .init(elements[0], elements[1], 1)
+        case 3:
+            self = .init(elements[0], elements[1], elements[2])
+        default:
+            fatalError()
+        }
+    }
+
+}

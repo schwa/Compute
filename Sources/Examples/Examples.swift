@@ -20,6 +20,7 @@ enum Examples {
             SIMDReduce.self,
             ThreadgroupLogging.self,
             BitonicSortDemo.self,
+            Histogram.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil

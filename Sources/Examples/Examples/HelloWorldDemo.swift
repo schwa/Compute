@@ -19,8 +19,7 @@ enum HelloWorldDemo: Demo {
         let logger = Logger()
         logger.log("Hello world (from Swift!)")
         let compute = try Compute(device: device, logger: logger)
-        let library: ShaderLibrary
-        library = ShaderLibrary.source(source, enableLogging: true)
+        let library = ShaderLibrary.source(source, enableLogging: true)
         let helloWorld = try compute.makePipeline(function: library.hello_world)
         try compute.run(pipeline: helloWorld, width: 1)
     }

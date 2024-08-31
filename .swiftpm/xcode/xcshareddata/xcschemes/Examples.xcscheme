@@ -53,7 +53,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "BitonicSortDemo"
+            argument = "Histogram"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
