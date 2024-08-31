@@ -22,6 +22,8 @@ enum Examples {
             BitonicSortDemo.self,
             Histogram.self,
             PrefixSum.self,
+PrefixSum2.self,
+PrefixSum3.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil
