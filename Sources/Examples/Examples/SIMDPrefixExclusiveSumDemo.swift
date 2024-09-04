@@ -1,7 +1,7 @@
 import Algorithms
 import Compute
 import Metal
-import MetalSupport
+
 import os
 
 enum SIMDPrefixExclusiveSumDemo: Demo {
