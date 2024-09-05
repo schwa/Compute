@@ -152,3 +152,4 @@ public extension MTLCommandEncoder {
         return try closure()
     }
 }
+
