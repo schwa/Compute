@@ -10,12 +10,6 @@ namespace YAPrefixSum {
     const uint threadgroup_position_in_grid [[threadgroup_position_in_grid]];
     const uint thread_position_in_threadgroup [[thread_position_in_threadgroup]];
 
-    void log_if_outside(uint value, uint lower, uint upper) {
-        if (value < lower || value >= upper) {
-            os_log_default.log("Value (%d) is out of range (%d..<%d)", value, lower, upper);
-        }
-    }
-
     // MARK: -
 
     // Very inefficient. Do not use. Does work with any size input however. But is not at all parallel. Beware.
