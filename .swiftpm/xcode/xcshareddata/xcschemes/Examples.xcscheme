@@ -55,6 +55,10 @@
             argument = "CountingSortDemo"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "BitonicSortDemo"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction

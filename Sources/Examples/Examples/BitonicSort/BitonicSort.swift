@@ -6,6 +6,8 @@ import os
 
 public struct BitonicSortDemo: Demo {
 
+    static let capture = true
+
     public static func main() async throws {
 
         var entries: [UInt32] = timeit("Creating entries") {
@@ -34,24 +36,26 @@ public struct BitonicSortDemo: Demo {
         var threadgroupsPerGrid = (entries.count + pipeline.maxTotalThreadsPerThreadgroup - 1) / pipeline.maxTotalThreadsPerThreadgroup
         threadgroupsPerGrid = (threadgroupsPerGrid + pipeline.threadExecutionWidth - 1) / pipeline.threadExecutionWidth * pipeline.threadExecutionWidth
 
-        try timeit("GPU") {
-            try compute.task { task in
-                try task { dispatch in
-                    var n = 0
-                    for stageIndex in 0 ..< numStages {
-                        for stepIndex in 0 ..< (stageIndex + 1) {
-                            let groupWidth = 1 << (stageIndex - stepIndex)
-                            let groupHeight = 2 * groupWidth - 1
-                            pipeline.arguments.groupWidth = .int(groupWidth)
-                            pipeline.arguments.groupHeight = .int(groupHeight)
-                            pipeline.arguments.stepIndex = .int(stepIndex)
-//                            print("\(n), \(stageIndex)/\(numStages), \(stepIndex)/\(stageIndex + 1), \(groupWidth), \(groupHeight)")
-                            try dispatch(
-                                pipeline: pipeline,
-                                threadgroupsPerGrid: MTLSize(width: threadgroupsPerGrid),
-                                threadsPerThreadgroup: MTLSize(width: pipeline.maxTotalThreadsPerThreadgroup)
-                            )
-                            n += 1
+        try device.capture(enabled: capture) {
+            try timeit("GPU") {
+                try compute.task { task in
+                    try task { dispatch in
+                        var n = 0
+                        for stageIndex in 0 ..< numStages {
+                            for stepIndex in 0 ..< (stageIndex + 1) {
+                                let groupWidth = 1 << (stageIndex - stepIndex)
+                                let groupHeight = 2 * groupWidth - 1
+                                pipeline.arguments.groupWidth = .int(groupWidth)
+                                pipeline.arguments.groupHeight = .int(groupHeight)
+                                pipeline.arguments.stepIndex = .int(stepIndex)
+                                //                            print("\(n), \(stageIndex)/\(numStages), \(stepIndex)/\(stageIndex + 1), \(groupWidth), \(groupHeight)")
+                                try dispatch(
+                                    pipeline: pipeline,
+                                    threadgroupsPerGrid: MTLSize(width: threadgroupsPerGrid),
+                                    threadsPerThreadgroup: MTLSize(width: pipeline.maxTotalThreadsPerThreadgroup)
+                                )
+                                n += 1
+                            }
                         }
                     }
                 }
