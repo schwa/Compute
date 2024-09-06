@@ -16,6 +16,10 @@ enum CountingSortDemo: Demo {
         //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         //        print("Input", elements)
 
+        var histogramPipeline = try compute.makePipeline(function: library.function(name: "CountingSort::histogram"))
+        var prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_inclusive_slow"))
+        var shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle"))
+
         var input = try device.makeTypedBuffer(data: elements)
         var output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
         try device.capture(enabled: capture) {
@@ -26,7 +30,6 @@ enum CountingSortDemo: Demo {
                         let shift = phase * 8
 
                         let histogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
-                        var histogramPipeline = try compute.makePipeline(function: library.function(name: "CountingSort::histogram"))
                         histogramPipeline.arguments.input = .buffer(input)
                         histogramPipeline.arguments.output = .buffer(histogram)
                         histogramPipeline.arguments.count = .int(input.count)
@@ -35,7 +38,6 @@ enum CountingSortDemo: Demo {
                         try dispatch(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
                         let summedHistogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
-                        var prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_inclusive_slow"))
                         prefixSumPipeline.arguments.inputs = .buffer(histogram)
                         prefixSumPipeline.arguments.outputs = .buffer(summedHistogram)
                         prefixSumPipeline.arguments.count = .int(histogram.count)
@@ -44,13 +46,12 @@ enum CountingSortDemo: Demo {
 
                         assert(Array(summedHistogram) == Array(histogram).prefixSumInclusive())
 
-                        var shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle1"))
                         shufflePipeline.arguments.input = .buffer(input)
                         shufflePipeline.arguments.count = .int(input.count)
                         shufflePipeline.arguments.output = .buffer(output)
                         shufflePipeline.arguments.shift = .int(shift)
                         shufflePipeline.arguments.histogram = .buffer(summedHistogram)
-                        try dispatch(pipeline: shufflePipeline, threads: MTLSize(width: 1), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: 1)))
+                        try dispatch(pipeline: shufflePipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
                         swap(&input, &output)
                     }
