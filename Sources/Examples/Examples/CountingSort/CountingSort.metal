@@ -121,7 +121,6 @@ namespace CountingSort {
         const uchar bucket = (value >> shift) & 0xFF;
 
         const uint newIndex = atomic_fetch_add_explicit(&histogram[bucket], -1, memory_order_relaxed) - 1;
-        os_log_default.log("%d %d %d", thread_position_in_grid, index, newIndex);
         output[newIndex] = value;
 
 //        for (int index = count - 1; index >= 0; --index) {

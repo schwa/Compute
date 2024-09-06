@@ -24,13 +24,24 @@ namespace YAPrefixSum {
     // MARK: -
 
     // Very inefficient. Do not use. Does work with any size input however. But is not at all parallel. Beware.
-    kernel void prefix_sum_slow(
+    kernel void prefix_sum_exclusive_slow(
         constant uint *inputs [[buffer(0)]],
         constant uint &count [[buffer(1)]],
         device uint *outputs [[buffer(2)]]
     ) {
         for (uint n = 1; n != count; ++n) {
             outputs[n] = inputs[n - 1] + outputs[n - 1];
+        }
+    }
+
+    kernel void prefix_sum_inclusive_slow(
+        constant uint *inputs [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *outputs [[buffer(2)]]
+    ) {
+        outputs[0] = inputs[0];
+        for (uint n = 1; n != count; ++n) {
+            outputs[n] = inputs[n] + outputs[n - 1];
         }
     }
 
