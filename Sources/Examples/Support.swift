@@ -310,11 +310,23 @@ extension MTLSize: @retroactive ExpressibleByArrayLiteral {
 /// - Precondition: `divisor` must be greater than 0.
 func stride(from start: Int, dividingBy divisor: Int) -> AnyIterator<Int> {
     precondition(divisor > 0, "Divisor must be greater than 0")
+    guard start != 0 else {
+        return AnyIterator([0].makeIterator())
+    }
     var current = start
+    var finished = false
     return AnyIterator {
-        guard current > 1 else { return nil }
-        defer { current = ceildiv(current, divisor) }
+        if finished {
+            return nil
+        }
+        defer {
+            current = ceildiv(current, divisor)
+        }
+        finished = current == 1
         return current
+
+
+
     }
 }
 

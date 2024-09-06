@@ -30,6 +30,7 @@ let package = Package(
                 .plugin(name: "MetalCompilerPlugin", package: "MetalCompilerPlugin")
             ]
         ),
-        .testTarget(name: "ComputeTests", dependencies: ["Compute"])
+        .testTarget(name: "ComputeTests", dependencies: ["Compute"]),
+        .testTarget(name: "ExampleTests", dependencies: ["Examples"]),
     ]
 )

@@ -4,55 +4,24 @@ import Metal
 import os
 import TabularData
 
-struct YAPrefixSum: Demo {
+struct YAPrefixSum {
 
     static let logging = false
     static let capture = false
     static let exporting = false
 
-    static func main() async throws {
-        let device = MTLCreateSystemDefaultDevice()!
-
-        let count = 1_500_000
-//        let values = Array<UInt32>(repeating: 1, count: count)
-//        let values = Array<UInt32>(1...UInt32(count))
-        let values = Array<UInt32>((1...count).map({ _ in .random(in: 0..<10) }))
-
-        let input = try device.makeTypedBuffer(data: values).labelled("Input")
-        let expectedResult = timeit("CPU") { values.prefixSum() }
-
-        let demo = try Self(device: device)
-
-        let output = try timeit("GPU") {
-            try demo.simd2(input: input)
-        }
-        let result = Array(output)
-
-        print(result == expectedResult)
-
-        if exporting {
-            var dataFrame = DataFrame()
-            dataFrame.append(column: Column(name: "index", contents: 0..<result.count))
-            dataFrame.append(column: Column(name: "expectedResult", contents: expectedResult))
-            dataFrame.append(column: Column(name: "result", contents: result))
-            let url = URL(filePath: "YAPrefixSum.csv")
-            try dataFrame.writeCSV(to: url)
-            NSWorkspace.shared.selectFile(url.path, inFileViewerRootedAtPath: "/")
-        }
-    }
-
-
-    let device: MTLDevice
     let compute: Compute
     let library: ShaderLibrary
 
-    init(device: MTLDevice) throws {
-        self.device = device
-        compute = try Compute(device: device, logger: Logger(), logging: YAPrefixSum.logging)
+    init(compute: Compute) throws {
+        self.compute = compute
+//        compute = try Compute(device: device, logger: Logger(), logging: YAPrefixSum.logging)
         library = ShaderLibrary.bundle(.module, name: "debug")
     }
 
-    func slow(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+    // Do not use :-)
+    func prefixSumSlow(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+        let device = compute.device
         let output = try device.makeTypedBuffer(data: Array<UInt32>(repeating: 0, count: input.count))
         var pipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_slow"))
         pipeline.arguments.inputs = .buffer(input)
@@ -62,7 +31,8 @@ struct YAPrefixSum: Demo {
         return output
     }
 
-    func simd2(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+    func prefixSum(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+        let device = compute.device
         var prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_simd"))
         var gatherPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::gather_totals"))
         var applyOffsetsPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::apply_offsets"))
@@ -75,12 +45,7 @@ struct YAPrefixSum: Demo {
         let bufferC: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: ceildiv(input.count, prefixSumPipeline.threadExecutionWidth)).labelled("BufferC")
         let bufferD: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: chunkCount).labelled("BufferD")
 
-//        let total = bufferA.map { $0.count }.reduce(0, +) + bufferB.count + bufferC.count + bufferD.count
-//        print(Double(total) / Double(input.count))
-
-
-
-        func internal_simd2(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, level: Int, count: Int) throws -> TypedMTLBuffer<UInt32> {
+        func internal_prefixSum(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, level: Int, count: Int) throws -> TypedMTLBuffer<UInt32> {
             let output = bufferA[level]
             prefixSumPipeline.arguments.inputs = .buffer(input)
             prefixSumPipeline.arguments.count = .int(UInt32(count))
@@ -105,7 +70,7 @@ struct YAPrefixSum: Demo {
                 return output
             }
 
-            let offsets = try internal_simd2(dispatch: dispatch, input: bufferD, level: level + 1, count: chunkCount)
+            let offsets = try internal_prefixSum(dispatch: dispatch, input: bufferD, level: level + 1, count: chunkCount)
 
             applyOffsetsPipeline.arguments.outputs = .buffer(output)
             applyOffsetsPipeline.arguments.chunk_size = .int(chunkSize)
@@ -119,9 +84,46 @@ struct YAPrefixSum: Demo {
         return try device.capture(enabled: Self.capture) {
             try compute.task { task in
                 try task { dispatch in
-                    return try internal_simd2(dispatch: dispatch, input: input, level: 0, count: input.count)
+                    return try internal_prefixSum(dispatch: dispatch, input: input, level: 0, count: input.count)
                 }
             }
+        }
+    }
+
+
+}
+
+extension YAPrefixSum: Demo {
+
+    static func main() async throws {
+        let device = MTLCreateSystemDefaultDevice()!
+
+        let count = 1_500_000
+//        let values = Array<UInt32>(repeating: 1, count: count)
+//        let values = Array<UInt32>(1...UInt32(count))
+        let values = Array<UInt32>((1...count).map({ _ in .random(in: 0..<10) }))
+
+        let input = try device.makeTypedBuffer(data: values).labelled("Input")
+        let expectedResult = timeit("CPU") { values.prefixSum() }
+
+        let compute = try Compute(device: device, logging: logging)
+        let demo = try YAPrefixSum(compute: compute)
+
+        let output = try timeit("GPU") {
+            try demo.prefixSum(input: input)
+        }
+        let result = Array(output)
+
+        print(result == expectedResult)
+
+        if exporting {
+            var dataFrame = DataFrame()
+            dataFrame.append(column: Column(name: "index", contents: 0..<result.count))
+            dataFrame.append(column: Column(name: "expectedResult", contents: expectedResult))
+            dataFrame.append(column: Column(name: "result", contents: result))
+            let url = URL(filePath: "YAPrefixSum.csv")
+            try dataFrame.writeCSV(to: url)
+            NSWorkspace.shared.selectFile(url.path, inFileViewerRootedAtPath: "/")
         }
     }
 

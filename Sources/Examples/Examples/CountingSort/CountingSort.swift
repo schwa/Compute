@@ -24,7 +24,7 @@ enum CountingSortDemo: Demo {
 
         let input = try device.makeTypedBuffer(data: elements)
         let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
-        var histogram = try compute.makePipeline(function: library.function(name: "CountingSort::histogram3"))
+        var histogram = try compute.makePipeline(function: library.function(name: "CountingSort::histogram"))
         histogram.arguments.input = .buffer(input)
         histogram.arguments.output = .buffer(output)
         histogram.arguments.count = .int(input.count)

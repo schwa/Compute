@@ -54,7 +54,7 @@ namespace CountingSort {
     }
 
     // M1 Ultra @ 1.5m input = 38.70 us
-    kernel void histogram3(
+    kernel void histogram(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
         constant uint &shift [[buffer(2)]],
