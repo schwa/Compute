@@ -218,16 +218,6 @@ extension Array where Element: Equatable {
 
 }
 
-extension Collection where Element == UInt32 {
-    func prefixSum() -> [UInt32] {
-        var output = Array(repeating: UInt32.zero, count: count)
-        for j in 1..<count {
-            output[j] = self[self.index(self.startIndex, offsetBy: j-1)] + output[j-1]
-        }
-        return output
-    }
-}
-
 // MARK: -
 
 func log2(_ value: UInt32, ceiling: Bool = false) -> UInt32 {

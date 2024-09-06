@@ -80,7 +80,7 @@ namespace YAPrefixSum {
         // Perform a prefix sum on the SIMD group totals to calculate offsets...
         if (thread_position_in_threadgroup < threads_per_simdgroup) {
             const uint totals_index = threadgroup_position_in_grid * threads_per_simdgroup + thread_position_in_threadgroup;
-            const uint offset = simd_prefix_sum(totals[totals_index]);
+            const uint offset = simd_prefix_exclusive_sum(totals[totals_index]);
             offsets[totals_index] = offset;
         }
 

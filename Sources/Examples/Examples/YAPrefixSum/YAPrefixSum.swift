@@ -104,7 +104,7 @@ extension YAPrefixSum: Demo {
         let values = Array<UInt32>((1...count).map({ _ in .random(in: 0..<10) }))
 
         let input = try device.makeTypedBuffer(data: values).labelled("Input")
-        let expectedResult = timeit("CPU") { values.prefixSum() }
+        let expectedResult = timeit("CPU") { values.prefixSumExclusive() }
 
         let compute = try Compute(device: device, logging: logging)
         let demo = try YAPrefixSum(compute: compute)

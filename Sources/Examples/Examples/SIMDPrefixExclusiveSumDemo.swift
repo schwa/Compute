@@ -57,7 +57,7 @@ enum SIMDPrefixExclusiveSumDemo: Demo {
         sumPipeline.arguments.output = .buffer(output)
         sumPipeline.arguments.totals = .buffer(totals)
         try compute.run(pipeline: sumPipeline, width: input.count)
-        let expectedResult = Array(input).prefixSum()
+        let expectedResult = Array(input).prefixSumExclusive()
         let intermediate = Array(output)
 
         var totalsPipeline = try compute.makePipeline(function: library.add_totals)
