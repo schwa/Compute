@@ -10,6 +10,17 @@ namespace YAPrefixSum {
     const uint threadgroup_position_in_grid [[threadgroup_position_in_grid]];
     const uint thread_position_in_threadgroup [[thread_position_in_threadgroup]];
 
+    constant bool prefix_sum_inclusive [[function_constant(12345)]];
+
+    uint simd_prefix_sum(uint n) {
+        if (prefix_sum_inclusive) {
+            return simd_prefix_inclusive_sum(n);
+        }
+        else {
+            return simd_prefix_exclusive_sum(n);
+        }
+    }
+
     // MARK: -
 
     // Very inefficient. Do not use. Does work with any size input however. But is not at all parallel. Beware.
@@ -43,7 +54,7 @@ namespace YAPrefixSum {
         }
 
         // Perform an exclusive prefix sum within each SIMD group
-        const uint t = simd_prefix_exclusive_sum(inputs[thread_position_in_grid]);
+        const uint t = simd_prefix_sum(inputs[thread_position_in_grid]);
         outputs[thread_position_in_grid] = t;
 
         if (count <= threads_per_simdgroup) {
@@ -69,7 +80,7 @@ namespace YAPrefixSum {
         // Perform a prefix sum on the SIMD group totals to calculate offsets...
         if (thread_position_in_threadgroup < threads_per_simdgroup) {
             const uint totals_index = threadgroup_position_in_grid * threads_per_simdgroup + thread_position_in_threadgroup;
-            const uint offset = simd_prefix_exclusive_sum(totals[totals_index]);
+            const uint offset = simd_prefix_sum(totals[totals_index]);
             offsets[totals_index] = offset;
         }
 

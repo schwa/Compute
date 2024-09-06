@@ -121,7 +121,7 @@ public extension Compute.Argument {
     /// - Returns: An `Argument` instance representing the boolean.
     static func bool(_ value: Bool) -> Self {
         .init { encoder, index in
-            withUnsafeBytes(of: value) { buffer in
+            withUnsafeBytes(of: value ? UInt8.max : UInt8.zero) { buffer in
                 guard let baseAddress = buffer.baseAddress else {
                     fatalError("Could not get baseAddress.")
                 }
@@ -129,7 +129,7 @@ public extension Compute.Argument {
             }
         }
         constantValue: { constants, name in
-            withUnsafeBytes(of: value) { buffer in
+            withUnsafeBytes(of: value ? UInt8.max : UInt8.zero) { buffer in
                 guard let baseAddress = buffer.baseAddress else {
                     fatalError("Could not get baseAddress.")
                 }

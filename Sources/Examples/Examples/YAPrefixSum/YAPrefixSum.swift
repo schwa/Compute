@@ -31,9 +31,9 @@ struct YAPrefixSum {
         return output
     }
 
-    func prefixSum(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+    func prefixSum(input: TypedMTLBuffer<UInt32>, inclusive: Bool = false) throws -> TypedMTLBuffer<UInt32> {
         let device = compute.device
-        var prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_simd"))
+        var prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_simd"), constants: ["YAPrefixSum::prefix_sum_inclusive": .bool(inclusive)])
         var gatherPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::gather_totals"))
         var applyOffsetsPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::apply_offsets"))
         let chunkSize = prefixSumPipeline.maxTotalThreadsPerThreadgroup

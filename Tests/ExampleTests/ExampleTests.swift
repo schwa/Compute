@@ -2,16 +2,18 @@
 @testable import Examples
 import Metal
 import Testing
+import os
 
 struct TestPrefixSum {
 
     func test(values: [UInt32]) throws -> [UInt32] {
         let device = MTLCreateSystemDefaultDevice()!
         let input = try device.makeTypedBuffer(data: values).labelled("Input")
-        let compute = try Compute(device: device)
+        let compute = try Compute(device: device, logger: Logger(), logging: true)
         let demo = try YAPrefixSum(compute: compute)
         let output = try demo.prefixSum(input: input)
-        return Array(output)
+        let result = Array(output)
+        return result
     }
 
     @Test
