@@ -101,7 +101,7 @@ namespace CountingSort {
             const uint value = input[index];
             const uchar bucket = (value >> shift) & 0xFF;
             histogram[bucket] -= 1;
-            const uint newIndex = histogram[bucket];
+            const uint newIndex = histogram[bucket] + 1;
             output[newIndex] = value;
 //            os_log_default.log("%d %d %d", index, newIndex, value);
         }
@@ -122,13 +122,5 @@ namespace CountingSort {
 
         const uint newIndex = atomic_fetch_add_explicit(&histogram[bucket], -1, memory_order_relaxed) - 1;
         output[newIndex] = value;
-
-//        for (int index = count - 1; index >= 0; --index) {
-//            const uint value = input[index];
-//            const uchar bucket = (value >> shift) & 0xFF;
-//            histogram[bucket] -= 1;
-//            const uint newIndex = histogram[bucket];
-//            output[newIndex] = value;
-//        }
     }
 }

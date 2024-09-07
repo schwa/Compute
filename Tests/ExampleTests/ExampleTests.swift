@@ -73,3 +73,23 @@ func testStride() {
     #expect(Array(stride(from: 10, dividingBy: 10)) == [10, 1])
     #expect(Array(stride(from: 0, dividingBy: 10)) == [0]) // Infinite loop
 }
+
+
+@Test
+func countingSortShuffles() throws {
+
+
+
+    let device = MTLCreateSystemDefaultDevice()!
+    let compute = try Compute(device: device, logger: Logger(), logging: true)
+
+    let library = ShaderLibrary.bundle(.module, name: "debug")
+    var shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle"))
+
+    let input: [UInt32] = [3, 2, 1, 0]
+
+    print(radixSort(values: input))
+
+    #expect(result == expectedOutput)
+
+}
