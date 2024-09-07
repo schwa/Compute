@@ -97,13 +97,11 @@ namespace CountingSort {
             return;
         }
 
-        for (int index = count - 1; index >= 0; --index) {
-            const uint value = input[index];
-            const uchar bucket = (value >> shift) & 0xFF;
-            histogram[bucket] -= 1;
-            const uint newIndex = histogram[bucket] + 1;
-            output[newIndex] = value;
-//            os_log_default.log("%d %d %d", index, newIndex, value);
+        for (uint i = 0; i != count; ++i) {
+            auto value = input[i];
+            auto key =  (value >> shift) & 0xFF;
+            auto outputIndex = histogram[key]++;
+            output[outputIndex] = input[i];
         }
     }
 

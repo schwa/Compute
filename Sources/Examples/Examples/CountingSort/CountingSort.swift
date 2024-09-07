@@ -53,6 +53,8 @@ struct CountingSortDemo {
 
         try compute.run(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
+        print(RadixSortCPU().histogram(input: Array(input), shift: shift))
+        print(Array(histogram))
         assert(RadixSortCPU().histogram(input: Array(input), shift: shift) == Array(histogram))
 
 
@@ -82,7 +84,7 @@ extension CountingSortDemo: Demo {
         let device = MTLCreateSystemDefaultDevice()!
         let compute = try Compute(device: device, logger: Logger(), logging: logging)
         let count = 10
-        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<10) }
+        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<100) }
 //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         let input = try device.makeTypedBuffer(data: elements)
         let sort = try CountingSortDemo(compute: compute)
@@ -95,8 +97,8 @@ extension CountingSortDemo: Demo {
             }
         }
 
-        print(RadixSortCPU().radixSort(input: elements) == elements.sorted())
-        print(Array(output) == elements.sorted())
+        print("CPU:", RadixSortCPU().radixSort(input: elements) == elements.sorted())
+        print("GPU:", Array(output) == elements.sorted())
         print(Array(output))
     }
 }

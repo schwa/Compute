@@ -31,8 +31,10 @@ struct RadixSortCPU {
     func shuffle(_ input: [UInt32], summedHistogram histogram: [UInt32], shift: Int, output: inout [UInt32]) {
         var histogram = histogram
         for i in input.indices {
-            let value = key(input[i], shift: shift)
-            output[Int(histogram[value]++)] = input[i]
+            let value = input[i]
+            let key = key(value, shift: shift)
+            let outputIndex = histogram[key]++
+            output[Int(outputIndex)] = input[i]
         }
     }
 
