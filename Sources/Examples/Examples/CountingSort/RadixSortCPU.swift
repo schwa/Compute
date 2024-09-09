@@ -44,6 +44,12 @@ struct RadixSortCPU {
         shuffle(input, summedHistogram: summedHistogram, shift: shift, output: &output)
     }
 
+    func countingSort(input: [UInt32], shift: Int) -> [UInt32] {
+        var output = Array(repeating: UInt32.zero, count: input.count)
+        countingSort(input: input, shift: shift, output: &output)
+        return output
+    }
+
     func radixSort(input: [UInt32]) -> [UInt32] {
         var input = input
         var output = Array(repeating: UInt32.zero, count: input.count)

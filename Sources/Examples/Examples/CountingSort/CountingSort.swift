@@ -32,10 +32,10 @@ struct CountingSortDemo {
         return input
     }
 
-    func countingSort1(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+    func countingSort1(input: TypedMTLBuffer<UInt32>, shift: Int) throws -> TypedMTLBuffer<UInt32> {
         let device = compute.device
         let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
-        try countingSort(input: input, output: output, shift: 0)
+        try countingSort(input: input, output: output, shift: shift)
         return output
     }
 
@@ -85,7 +85,7 @@ extension CountingSortDemo: Demo {
         let device = MTLCreateSystemDefaultDevice()!
         let compute = try Compute(device: device, logger: Logger(), logging: logging)
         let count = 10
-        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<100) }
+        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<100000) }
 //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         let input = try device.makeTypedBuffer(data: elements)
         let sort = try CountingSortDemo(compute: compute)
@@ -93,13 +93,19 @@ extension CountingSortDemo: Demo {
         let output = try device.capture(enabled: Self.capture) {
             try compute.task { task in
                 try task { dispatch in
-                    try sort.countingSort1(input: input)
+                    try sort.countingSort1(input: input, shift: 16)
                 }
             }
         }
 
-        print("CPU:", RadixSortCPU().radixSort(input: elements) == elements.sorted())
-        print("GPU:", Array(output) == elements.sorted())
+        let cpu = RadixSortCPU().countingSort(input: elements, shift: 16)
+        let gpu = Array(output)
+        print(cpu == gpu)
+
+//        print("CPU:",  == elements.sorted())
+//
+////        print("CPU:", RadixSortCPU().radixSort(input: elements) == elements.sorted())
+//        print("GPU:", Array(output) == elements.sorted())
         print(Array(output))
     }
 }
