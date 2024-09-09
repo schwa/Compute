@@ -13,6 +13,7 @@ namespace CountingSort {
 
     // MARK: -
 
+    // VERY VERY SLOW
     kernel void shuffle1(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
@@ -32,7 +33,7 @@ namespace CountingSort {
         }
     }
 
-
+    // BROKEN:
     kernel void shuffle2(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
@@ -47,6 +48,7 @@ namespace CountingSort {
         output[outputIndex] = input[i];
     }
 
+    // VERY SLOW
     kernel void shuffle3(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
@@ -67,7 +69,66 @@ namespace CountingSort {
         }
     }
 
+    kernel void shuffle4(
+        device uint *input [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *output [[buffer(2)]],
+        device uint *histogram [[buffer(3)]],
+        constant uint &shift [[buffer(4)]]
+    ) {
+        threadgroup atomic_uint threadgroupHistogram[256];
 
+        if (thread_position_in_grid == 0) {
+            for (uint i = 0; i != 256; ++i) {
+                atomic_store_explicit(&threadgroupHistogram[i], histogram[i], memory_order_relaxed);
+            }
+        }
 
+        threadgroup_barrier(mem_flags::mem_threadgroup);
 
+        if (thread_position_in_grid >= 256) {
+            return;
+        }
+        for (uint i = 0; i != count; ++i) {
+            auto value = input[i];
+            auto key = (value >> shift) & 0xFF;
+            if (key == thread_position_in_grid) {
+                auto outputIndex = atomic_fetch_add_explicit(&threadgroupHistogram[key], 1, memory_order_relaxed);
+                output[outputIndex] = input[i];
+            }
+        }
+    }
+
+    kernel void shuffle5(
+        device uint *input [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *output [[buffer(2)]],
+        device uint *histogram [[buffer(3)]],
+        constant uint &shift [[buffer(4)]]
+    ) {
+        if (thread_position_in_grid >= 256) {
+            return;
+        }
+
+        threadgroup uint h;
+        h = histogram[thread_position_in_grid];
+
+        for (uint i = 0; i != count; ++i) {
+            auto value = input[i];
+            auto key = (value >> shift) & 0xFF;
+            if (key == thread_position_in_grid) {
+                auto outputIndex = h++;
+                output[outputIndex] = input[i];
+            }
+        }
+    }
+
+    kernel void shuffle6(
+        device uint *input [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *output [[buffer(2)]],
+        device uint *histogram [[buffer(3)]],
+        constant uint &shift [[buffer(4)]]
+     ) {
+     }
 }
