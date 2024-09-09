@@ -41,10 +41,8 @@ namespace CountingSort {
         constant uint &shift [[buffer(4)]]
     ) {
         const uint index = count - thread_position_in_grid - 1;
-
         const uint value = input[index];
         const uchar bucket = (value >> shift) & 0xFF;
-
         const uint newIndex = atomic_fetch_add_explicit(&histogram[bucket], -1, memory_order_relaxed) - 1;
         output[newIndex] = value;
     }
