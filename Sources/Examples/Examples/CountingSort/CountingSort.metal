@@ -26,7 +26,7 @@ namespace CountingSort {
 
         for (uint i = 0; i != count; ++i) {
             auto value = input[i];
-            auto key =  (value >> shift) & 0xFF;
+            auto key = (value >> shift) & 0xFF;
             auto outputIndex = histogram[key]++;
             output[outputIndex] = input[i];
         }
@@ -46,4 +46,27 @@ namespace CountingSort {
         auto outputIndex = atomic_fetch_add_explicit(&histogram[key], 1, memory_order_relaxed);
         output[outputIndex] = input[i];
     }
+
+    kernel void shuffle3(
+        device uint *input [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *output [[buffer(2)]],
+        device atomic_uint *histogram [[buffer(3)]],
+        constant uint &shift [[buffer(4)]]
+    ) {
+        if (thread_position_in_grid >= 256) {
+            return;
+        }
+        for (uint i = 0; i != count; ++i) {
+            auto value = input[i];
+            auto key = (value >> shift) & 0xFF;
+            if (key == thread_position_in_grid) {
+                auto outputIndex = atomic_fetch_add_explicit(&histogram[key], 1, memory_order_relaxed);
+                output[outputIndex] = input[i];
+            }
+        }
+    }
+
+
+
 }
