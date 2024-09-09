@@ -24,7 +24,7 @@ struct CountingSortDemo {
         var input = input
         let device = compute.device
         var output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
-        for phase in 0..<3 {
+        for phase in 0...3 {
             let shift = phase * 8
             try countingSort(input: input, output: output, shift: shift)
             swap(&input, &output)
@@ -53,12 +53,6 @@ struct CountingSortDemo {
 
         try compute.run(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
-        print(Array(input))
-        print(RadixSortCPU().histogram(input: Array(input), shift: shift))
-        print(Array(histogram))
-        assert(RadixSortCPU().histogram(input: Array(input), shift: shift) == Array(histogram))
-
-
         let summedHistogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
         prefixSumPipeline.arguments.inputs = .buffer(histogram)
         prefixSumPipeline.arguments.outputs = .buffer(summedHistogram)
@@ -84,8 +78,8 @@ extension CountingSortDemo: Demo {
     static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let compute = try Compute(device: device, logger: Logger(), logging: logging)
-        let count = 10
-        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<100000) }
+        let count = 1_500_000
+        let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<(UInt32.max)) }
 //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         let input = try device.makeTypedBuffer(data: elements)
         let sort = try CountingSortDemo(compute: compute)
@@ -93,19 +87,15 @@ extension CountingSortDemo: Demo {
         let output = try device.capture(enabled: Self.capture) {
             try compute.task { task in
                 try task { dispatch in
-                    try sort.countingSort1(input: input, shift: 16)
+                    try sort.radixSort(input: input)
                 }
             }
         }
 
-        let cpu = RadixSortCPU().countingSort(input: elements, shift: 16)
+        let cpu = RadixSortCPU().radixSort(input: elements)
+        print(cpu == elements.sorted())
         let gpu = Array(output)
+        print(gpu == elements.sorted())
         print(cpu == gpu)
-
-//        print("CPU:",  == elements.sorted())
-//
-////        print("CPU:", RadixSortCPU().radixSort(input: elements) == elements.sorted())
-//        print("GPU:", Array(output) == elements.sorted())
-        print(Array(output))
     }
 }
