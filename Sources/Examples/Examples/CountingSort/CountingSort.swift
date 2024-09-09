@@ -17,7 +17,7 @@ struct CountingSortDemo {
         let library = ShaderLibrary.bundle(.module, name: "debug")
         histogramPipeline = try compute.makePipeline(function: library.function(name: "Histogram::histogram3"))
         prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_exclusive_slow"))
-        shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle1"))
+        shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle2"))
     }
 
     func radixSort(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {

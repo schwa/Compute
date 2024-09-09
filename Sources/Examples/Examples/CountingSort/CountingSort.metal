@@ -33,17 +33,17 @@ namespace CountingSort {
     }
 
 
-    kernel void shuffle(
+    kernel void shuffle2(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
         device uint *output [[buffer(2)]],
         device atomic_uint *histogram [[buffer(3)]],
         constant uint &shift [[buffer(4)]]
     ) {
-        const uint index = count - thread_position_in_grid - 1;
-        const uint value = input[index];
-        const uchar bucket = (value >> shift) & 0xFF;
-        const uint newIndex = atomic_fetch_add_explicit(&histogram[bucket], -1, memory_order_relaxed) - 1;
-        output[newIndex] = value;
+        const uint i = thread_position_in_grid;
+        auto value = input[i];
+        auto key = (value >> shift) & 0xFF;
+        auto outputIndex = atomic_fetch_add_explicit(&histogram[key], 1, memory_order_relaxed);
+        output[outputIndex] = input[i];
     }
 }
