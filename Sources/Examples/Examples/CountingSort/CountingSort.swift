@@ -15,7 +15,7 @@ struct CountingSortDemo {
     init(compute: Compute) throws {
         self.compute = compute
         let library = ShaderLibrary.bundle(.module, name: "debug")
-        histogramPipeline = try compute.makePipeline(function: library.function(name: "CountingSort::histogram"))
+        histogramPipeline = try compute.makePipeline(function: library.function(name: "Histogram::histogram2"))
         prefixSumPipeline = try compute.makePipeline(function: library.function(name: "YAPrefixSum::prefix_sum_exclusive_slow"))
         shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle1"))
     }
@@ -53,6 +53,7 @@ struct CountingSortDemo {
 
         try compute.run(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
+        print(Array(input))
         print(RadixSortCPU().histogram(input: Array(input), shift: shift))
         print(Array(histogram))
         assert(RadixSortCPU().histogram(input: Array(input), shift: shift) == Array(histogram))
