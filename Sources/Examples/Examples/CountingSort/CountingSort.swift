@@ -68,7 +68,7 @@ struct CountingSortDemo {
         shufflePipeline.arguments.output = .buffer(output)
         shufflePipeline.arguments.shift = .int(shift)
         shufflePipeline.arguments.histogram = .buffer(summedHistogram)
-        try compute.run(pipeline: shufflePipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
+        try compute.run(pipeline: shufflePipeline, threads: MTLSize(width: 256), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: 256)))
 
     }
 }
@@ -78,7 +78,8 @@ extension CountingSortDemo: Demo {
     static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let compute = try Compute(device: device, logger: Logger(), logging: logging)
-        let count = 150000
+//        let count = 150_000
+        let count = 1_500_000
         let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<(UInt32.max)) }
 //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         let input = try device.makeTypedBuffer(data: elements)
