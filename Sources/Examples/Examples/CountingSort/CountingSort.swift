@@ -20,26 +20,26 @@ struct CountingSortDemo {
         shufflePipeline = try compute.makePipeline(function: library.function(name: "CountingSort::shuffle3"))
     }
 
-    func radixSort(input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
+    func radixSort(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
         var input = input
         let device = compute.device
         var output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
         for phase in 0...3 {
             let shift = phase * 8
-            try countingSort(input: input, output: output, shift: shift)
+            try countingSort(dispatch: dispatch, input: input, output: output, shift: shift)
             swap(&input, &output)
         }
         return input
     }
 
-    func countingSort1(input: TypedMTLBuffer<UInt32>, shift: Int) throws -> TypedMTLBuffer<UInt32> {
+    func countingSort1(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, shift: Int) throws -> TypedMTLBuffer<UInt32> {
         let device = compute.device
         let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
-        try countingSort(input: input, output: output, shift: shift)
+        try countingSort(dispatch: dispatch, input: input, output: output, shift: shift)
         return output
     }
 
-    func countingSort(input: TypedMTLBuffer<UInt32>, output: TypedMTLBuffer<UInt32>, shift: Int) throws {
+    func countingSort(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, output: TypedMTLBuffer<UInt32>, shift: Int) throws {
         var histogramPipeline = histogramPipeline
         var prefixSumPipeline = prefixSumPipeline
         var shufflePipeline = shufflePipeline
@@ -51,24 +51,21 @@ struct CountingSortDemo {
         histogramPipeline.arguments.count = .int(input.count)
         histogramPipeline.arguments.shift = .int(shift)
 
-        try compute.run(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
+        try dispatch(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
         let summedHistogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
         prefixSumPipeline.arguments.inputs = .buffer(histogram)
         prefixSumPipeline.arguments.outputs = .buffer(summedHistogram)
         prefixSumPipeline.arguments.count = .int(histogram.count)
 
-        try compute.run(pipeline: prefixSumPipeline, threads: MTLSize(width: 256), threadsPerThreadgroup: prefixSumPipeline.calculateThreadgroupSize(threads: MTLSize(width: 256)))
-
-        assert(RadixSortCPU().prefixSumExclusive(RadixSortCPU().histogram(input: Array(input), shift: shift)) == Array(summedHistogram))
-
+        try dispatch(pipeline: prefixSumPipeline, threads: MTLSize(width: 256), threadsPerThreadgroup: prefixSumPipeline.calculateThreadgroupSize(threads: MTLSize(width: 256)))
 
         shufflePipeline.arguments.input = .buffer(input)
         shufflePipeline.arguments.count = .int(input.count)
         shufflePipeline.arguments.output = .buffer(output)
         shufflePipeline.arguments.shift = .int(shift)
         shufflePipeline.arguments.histogram = .buffer(summedHistogram)
-        try compute.run(pipeline: shufflePipeline, threads: MTLSize(width: 256), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: 256)))
+        try dispatch(pipeline: shufflePipeline, threads: MTLSize(width: 256), threadsPerThreadgroup: shufflePipeline.calculateThreadgroupSize(threads: MTLSize(width: 256)))
 
     }
 }
@@ -78,8 +75,8 @@ extension CountingSortDemo: Demo {
     static func main() async throws {
         let device = MTLCreateSystemDefaultDevice()!
         let compute = try Compute(device: device, logger: Logger(), logging: logging)
-//        let count = 150_000
-        let count = 1_500_000
+        let count = 150_000
+//        let count = 1_500_000
         let elements: [UInt32] = (0..<count).map { _ in UInt32.random(in: 0..<(UInt32.max)) }
 //        let elements: [UInt32] = (0..<count).map { UInt32(count - $0 - 1) }
         let input = try device.makeTypedBuffer(data: elements)
@@ -88,7 +85,7 @@ extension CountingSortDemo: Demo {
         let output = try device.capture(enabled: Self.capture) {
             try compute.task { task in
                 try task { dispatch in
-                    try sort.radixSort(input: input)
+                    try sort.radixSort(dispatch: dispatch, input: input)
                 }
             }
         }
