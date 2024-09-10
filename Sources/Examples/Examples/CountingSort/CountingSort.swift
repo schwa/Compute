@@ -5,7 +5,7 @@ import os
 struct CountingSortDemo {
 
     static let logging = false
-    static let capture = true
+    static let capture = false
 
     var compute: Compute
     var histogramPipeline: Compute.Pipeline

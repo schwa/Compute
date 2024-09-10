@@ -8,7 +8,9 @@ namespace CountingSort {
     const uint thread_position_in_grid [[thread_position_in_grid]];
     const uint thread_position_in_threadgroup [[thread_position_in_threadgroup]];
     const uint threads_per_simdgroup [[threads_per_simdgroup]];
-
+    const uint threads_per_threadgroup [[threads_per_threadgroup]];
+    const uint threads_per_grid [[threads_per_grid]];
+    const uint threadgroup_position_in_grid [[threadgroup_position_in_grid]];
 
 
     // MARK: -
@@ -33,21 +35,6 @@ namespace CountingSort {
         }
     }
 
-    // BROKEN:
-    kernel void shuffle2(
-        device uint *input [[buffer(0)]],
-        constant uint &count [[buffer(1)]],
-        device uint *output [[buffer(2)]],
-        device atomic_uint *histogram [[buffer(3)]],
-        constant uint &shift [[buffer(4)]]
-    ) {
-        const uint i = thread_position_in_grid;
-        auto value = input[i];
-        auto key = (value >> shift) & 0xFF;
-        auto outputIndex = atomic_fetch_add_explicit(&histogram[key], 1, memory_order_relaxed);
-        output[outputIndex] = input[i];
-    }
-
     // VERY SLOW
     kernel void shuffle3(
         device uint *input [[buffer(0)]],
@@ -69,6 +56,23 @@ namespace CountingSort {
         }
     }
 
+
+    // BROKEN but best performant. Output is sorted but not stable
+    kernel void shuffle2(
+        device uint *input [[buffer(0)]],
+        constant uint &count [[buffer(1)]],
+        device uint *output [[buffer(2)]],
+        device atomic_uint *histogram [[buffer(3)]],
+        constant uint &shift [[buffer(4)]]
+    ) {
+        const uint i = thread_position_in_grid;
+        auto value = input[i];
+        auto key = (value >> shift) & 0xFF;
+        auto outputIndex = atomic_fetch_add_explicit(&histogram[key], 1, memory_order_relaxed);
+        output[outputIndex] = input[i];
+    }
+
+    // Works. But only uses 256 threads
     kernel void shuffle4(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
@@ -99,6 +103,7 @@ namespace CountingSort {
         }
     }
 
+    // Works. But only uses 256 threads. No atomics so slightly faster than shuffle4.
     kernel void shuffle5(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
@@ -123,12 +128,18 @@ namespace CountingSort {
         }
     }
 
-    kernel void shuffle6(
+    kernel void shuffle7(
         device uint *input [[buffer(0)]],
         constant uint &count [[buffer(1)]],
         device uint *output [[buffer(2)]],
         device uint *histogram [[buffer(3)]],
-        constant uint &shift [[buffer(4)]]
+        constant uint &shift [[buffer(4)]],
+        device uint *chunkedHistogram [[buffer(5)]]
      ) {
+         if (thread_position_in_grid < 256) {
+
+         }
+
+
      }
 }
