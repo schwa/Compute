@@ -1,6 +1,6 @@
 import Compute
 import Metal
-import MetalSupport
+import MetalSupportLite
 import os
 
 // https://www.eecs.umich.edu/courses/eecs570/hw/parprefix.pdf

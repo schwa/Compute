@@ -1,6 +1,6 @@
 import Compute
 import Metal
-import MetalSupport
+import MetalSupportLite
 import os
 
 class PrefixSum3: Demo {
@@ -51,7 +51,7 @@ class PrefixSum3: Demo {
 
     func create_pass_recursive(data: TypedMTLBuffer<UInt32>, count: Int) throws {
         let workgroup_count = ceildiv(count, items_per_workgroup)
-        let blockSumBuffer: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: workgroup_count)
+        let blockSumBuffer: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: workgroup_count)
 
         var reduceDownsweepPipeline = try compute.makePipeline(function: library.reduce_downsweep)
         reduceDownsweepPipeline.arguments.items = .buffer(data)

@@ -1,6 +1,6 @@
 import Compute
 import Metal
-import MetalSupport
+import MetalSupportLite
 import os
 
 struct PrefixSum2: Demo {
@@ -58,16 +58,16 @@ struct PrefixSum2: Demo {
         let workgroup_count = ceildiv(count, items_per_workgroup)
         print(workgroup_count)
         let dispatchSize = device.find_optimal_dispatch_size(workgroup_count: Int(workgroup_count))
-        let blockSumBuffer: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: Int(workgroup_count))
+        let blockSumBuffer: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: Int(workgroup_count))
 
         var reduceDownsweepPipeline = try compute.makePipeline(function: library.reduce_downsweep)
 
         data.withUnsafeMTLBuffer { data in
-            reduceDownsweepPipeline.arguments.items = .buffer(data)
+            reduceDownsweepPipeline.arguments.items = .buffer(data!)
         }
 
         blockSumBuffer.withUnsafeMTLBuffer { blockSumBuffer in
-            reduceDownsweepPipeline.arguments.blockSums = .buffer(blockSumBuffer)
+            reduceDownsweepPipeline.arguments.blockSums = .buffer(blockSumBuffer!)
         }
         reduceDownsweepPipeline.arguments.WORKGROUP_SIZE_X = .int(workgroup_size.x)
         reduceDownsweepPipeline.arguments.WORKGROUP_SIZE_Y = .int(workgroup_size.y)
@@ -85,10 +85,10 @@ struct PrefixSum2: Demo {
 
 
             data.withUnsafeMTLBuffer { data in
-                blocksumPipeline.arguments.items = .buffer(data)
+                blocksumPipeline.arguments.items = .buffer(data!)
             }
             blockSumBuffer.withUnsafeMTLBuffer { blockSumBuffer in
-                blocksumPipeline.arguments.blockSums = .buffer(blockSumBuffer)
+                blocksumPipeline.arguments.blockSums = .buffer(blockSumBuffer!)
             }
             blocksumPipeline.arguments.WORKGROUP_SIZE_X = .int(workgroup_size.x)
             blocksumPipeline.arguments.WORKGROUP_SIZE_Y = .int(workgroup_size.y)
