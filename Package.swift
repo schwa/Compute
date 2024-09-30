@@ -11,15 +11,15 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/schwa/MetalCompilerPlugin", branch: "jwight/develop"),
-        .package(url: "https://github.com/schwa/SwiftGraphics", branch: "jwight/develop")
     ],
     targets: [
         .target(name: "Compute"),
+        .target(name: "MetalSupportLite"),
         .executableTarget(
             name: "Examples",
             dependencies: [
                 "Compute",
-                .product(name: "MetalSupport", package: "SwiftGraphics"),
+                "MetalSupportLite",
             ],
             resources: [
                 .copy("Bundle.txt"),

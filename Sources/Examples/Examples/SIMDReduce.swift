@@ -1,7 +1,6 @@
 import Compute
 import os
 import Metal
-import MetalSupport
 
 let source = #"""
     #include <metal_stdlib>

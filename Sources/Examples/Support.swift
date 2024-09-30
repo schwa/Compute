@@ -3,7 +3,7 @@ import Compute
 import CoreGraphics
 import Foundation
 import Metal
-import MetalSupport
+import MetalSupportLite
 
 public func getMachTimeInNanoseconds() -> UInt64 {
     var timebase = mach_timebase_info_data_t()

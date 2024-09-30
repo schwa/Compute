@@ -1,6 +1,5 @@
 import Compute
 import Metal
-import MetalSupport
 import os
 
 enum Histogram: Demo {
