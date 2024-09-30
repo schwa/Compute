@@ -1,5 +1,6 @@
 import Compute
 import Metal
+import MetalSupportLite
 import os
 
 struct CountingSortDemo {
@@ -23,7 +24,7 @@ struct CountingSortDemo {
     func radixSort(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>) throws -> TypedMTLBuffer<UInt32> {
         var input = input
         let device = compute.device
-        var output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
+        var output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: input.count)
         for phase in 0...3 {
             let shift = phase * 8
             try countingSort(dispatch: dispatch, input: input, output: output, shift: shift)
@@ -34,7 +35,7 @@ struct CountingSortDemo {
 
     func countingSort1(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, shift: Int) throws -> TypedMTLBuffer<UInt32> {
         let device = compute.device
-        let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: input.count)
+        let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: input.count)
         try countingSort(dispatch: dispatch, input: input, output: output, shift: shift)
         return output
     }
@@ -45,7 +46,7 @@ struct CountingSortDemo {
         var shufflePipeline = shufflePipeline
         let device = compute.device
 
-        let histogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
+        let histogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: 256)
         histogramPipeline.arguments.input = .buffer(input)
         histogramPipeline.arguments.output = .buffer(histogram)
         histogramPipeline.arguments.count = .int(input.count)
@@ -53,7 +54,7 @@ struct CountingSortDemo {
 
         try dispatch(pipeline: histogramPipeline, threads: MTLSize(width: input.count), threadsPerThreadgroup: histogramPipeline.calculateThreadgroupSize(threads: MTLSize(width: input.count)))
 
-        let summedHistogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
+        let summedHistogram: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: 256)
         prefixSumPipeline.arguments.inputs = .buffer(histogram)
         prefixSumPipeline.arguments.outputs = .buffer(summedHistogram)
         prefixSumPipeline.arguments.count = .int(histogram.count)

@@ -1,6 +1,7 @@
 import AppKit
 import Compute
 import Metal
+import MetalSupportLite
 import os
 import TabularData
 
@@ -39,11 +40,11 @@ struct YAPrefixSum {
         let chunkSize = prefixSumPipeline.maxTotalThreadsPerThreadgroup
         let chunkCount = ceildiv(input.count, chunkSize)
         let bufferA: [TypedMTLBuffer<UInt32>] = try stride(from: input.count, dividingBy: chunkSize).map {
-            try device.makeTypedBuffer(count: $0).labelled("BufferA-\($0)")
+            try device.makeTypedBuffer(capacity: $0).labelled("BufferA-\($0)")
         }
-        let bufferB: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: ceildiv(input.count, prefixSumPipeline.threadExecutionWidth)).labelled("BufferB")
-        let bufferC: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: ceildiv(input.count, prefixSumPipeline.threadExecutionWidth)).labelled("BufferC")
-        let bufferD: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: chunkCount).labelled("BufferD")
+        let bufferB: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: ceildiv(input.count, prefixSumPipeline.threadExecutionWidth)).labelled("BufferB")
+        let bufferC: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: ceildiv(input.count, prefixSumPipeline.threadExecutionWidth)).labelled("BufferC")
+        let bufferD: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: chunkCount).labelled("BufferD")
 
         func internal_prefixSum(dispatch: Compute.Dispatcher, input: TypedMTLBuffer<UInt32>, level: Int, count: Int) throws -> TypedMTLBuffer<UInt32> {
             let output = bufferA[level]

@@ -1,5 +1,6 @@
 import Compute
 import Metal
+import MetalSupportLite
 import os
 
 enum Histogram: Demo {
@@ -10,7 +11,7 @@ enum Histogram: Demo {
         }
         let input = try device.makeTypedBuffer(data: values)
         let bucketCount = 256
-        let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(count: 256)
+        let output: TypedMTLBuffer<UInt32> = try device.makeTypedBuffer(capacity: 256)
         let compute = try Compute(device: device, logger: Logger())
         let library = ShaderLibrary.bundle(.module, name: "debug")
         var histogram = try compute.makePipeline(function: .init(library: library, name: "Histogram::histogram1"))
