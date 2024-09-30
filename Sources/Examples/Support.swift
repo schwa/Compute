@@ -269,7 +269,7 @@ func ceildiv <T>(_ x: T, _ y: T) -> T where T: BinaryInteger {
 extension Array {
     init(_ buffer: TypedMTLBuffer<Element>) {
         self = buffer.withUnsafeMTLBuffer { buffer in
-            Array(buffer)
+            Array(buffer!)
         }
     }
 }
@@ -277,7 +277,7 @@ extension Array {
 extension Compute.Argument {
     static func buffer<T>(_ data: TypedMTLBuffer<T>) -> Self {
         data.withUnsafeMTLBuffer { buffer in
-            return .buffer(buffer)
+            return .buffer(buffer!)
         }
     }
 }

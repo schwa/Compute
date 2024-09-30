@@ -1,4 +1,3 @@
-import BaseSupport
 @preconcurrency import Metal
 
 /// A type-safe wrapper around `MTLBuffer` for managing Metal buffers with a specific element type.
