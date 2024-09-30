@@ -20,6 +20,7 @@ let package = Package(
             name: "Examples",
             dependencies: [
                 "Compute",
+                "MetalSupportLite",
                 .product(name: "Algorithms", package: "swift-algorithms"),
             ],
             resources: [
