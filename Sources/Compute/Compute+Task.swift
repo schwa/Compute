@@ -39,12 +39,13 @@ public extension Compute {
                 throw ComputeError.resourceCreationFailure
             }
             commandEncoder.label = "\(label ?? "Unlabeled")-MTLComputeCommandEncoder"
-
             defer {
                 commandEncoder.endEncoding()
             }
-            let dispatcher = Dispatcher(label: label, logger: logger, commandEncoder: commandEncoder)
-            return try block(dispatcher)
+            return try commandEncoder.withDebugGroup("Dispatching") {
+                let dispatcher = Dispatcher(label: label, logger: logger, commandEncoder: commandEncoder)
+                return try block(dispatcher)
+            }
         }
     }
 
@@ -70,7 +71,6 @@ public extension Compute {
         /// - Throws: Any error that occurs during the binding of arguments or dispatch.
         public func callAsFunction(pipeline: Pipeline, threadgroupsPerGrid: MTLSize, threadsPerThreadgroup: MTLSize) throws {
             logger?.info("Dispatching \(threadgroupsPerGrid.shortDescription) threadgroups per grid with \(threadsPerThreadgroup.shortDescription) threads per threadgroup. maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth).")
-
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             try pipeline.bind(commandEncoder)
             commandEncoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
@@ -88,9 +88,7 @@ public extension Compute {
             guard device.supportsFamily(.apple4) || device.supportsFamily(.common3) || device.supportsFamily(.metal3) else {
                 throw ComputeError.nonuniformThreadgroupsSizeNotSupported
             }
-
-            logger?.info("Dispatch - threads: \(threads.shortDescription), threadsPerThreadgroup \(threadsPerThreadgroup.shortDescription), maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth).")
-
+            logger?.info("Dispatch \(pipeline.function.name) - threads: \(threads.shortDescription), threadsPerThreadgroup \(threadsPerThreadgroup.shortDescription), maxTotalThreadsPerThreadgroup: \(pipeline.computePipelineState.maxTotalThreadsPerThreadgroup), threadExecutionWidth: \(pipeline.computePipelineState.threadExecutionWidth).")
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             commandEncoder.setComputePipelineState(pipeline.computePipelineState)
             try pipeline.bind(commandEncoder)

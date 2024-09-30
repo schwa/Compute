@@ -218,11 +218,11 @@ extension Array where Element: Equatable {
 
 }
 
-extension Array where Element == UInt32 {
+extension Collection where Element == UInt32 {
     func prefixSum() -> [UInt32] {
         var output = Array(repeating: UInt32.zero, count: count)
         for j in 1..<count {
-            output[j] = self[j-1] + output[j-1]
+            output[j] = self[self.index(self.startIndex, offsetBy: j-1)] + output[j-1]
         }
         return output
     }
@@ -300,4 +300,97 @@ extension MTLSize: @retroactive ExpressibleByArrayLiteral {
         }
     }
 
+}
+
+/// Generates an array of integers by repeatedly dividing the start value by the divisor and rounding up.
+/// - Parameters:
+///   - start: The initial value to start the sequence.
+///   - divisor: The number to divide by in each iteration.
+/// - Returns: An array of integers representing the sequence.
+/// - Precondition: `divisor` must be greater than 0.
+func stride(from start: Int, dividingBy divisor: Int) -> AnyIterator<Int> {
+    precondition(divisor > 0, "Divisor must be greater than 0")
+    var current = start
+    return AnyIterator {
+        guard current > 1 else { return nil }
+        defer { current = ceildiv(current, divisor) }
+        return current
+    }
+}
+
+public extension MTLSize {
+    init(_ size: CGSize) {
+        self.init(width: Int(size.width), height: Int(size.height), depth: 1)
+    }
+
+    init(_ width: Int, _ height: Int, _ depth: Int) {
+        self = MTLSize(width: width, height: height, depth: depth)
+    }
+
+    init(width: Int) {
+        self = MTLSize(width: width, height: 1, depth: 1)
+    }
+
+    init(width: Int, height: Int) {
+        self = MTLSize(width: width, height: height, depth: 1)
+    }
+}
+
+extension MTLDevice {
+    func capture <R>(enabled: Bool = true, _ block: () throws -> R) throws -> R {
+        guard enabled else {
+            return try block()
+        }
+        let captureManager = MTLCaptureManager.shared()
+        let captureScope = captureManager.makeCaptureScope(device: self)
+        let captureDescriptor = MTLCaptureDescriptor()
+        captureDescriptor.captureObject = captureScope
+        try captureManager.startCapture(with: captureDescriptor)
+        captureScope.begin()
+        defer {
+            captureScope.end()
+        }
+        return try block()
+    }
+
+    func makeBuffer(bytesOf content: [some Any], options: MTLResourceOptions) throws -> MTLBuffer {
+        try content.withUnsafeBytes { buffer in
+            let baseAddress = buffer.baseAddress!
+            guard let buffer = makeBuffer(bytes: baseAddress, length: buffer.count, options: options) else {
+                fatalError()
+            }
+            return buffer
+        }
+    }
+
+}
+
+public extension MTLBuffer {
+    func data() -> Data {
+        Data(bytes: contents(), count: length)
+    }
+
+    /// Update a MTLBuffer's contents using an inout type block
+    func with<T, R>(type: T.Type, _ block: (inout T) -> R) -> R {
+        let value = contents().bindMemory(to: T.self, capacity: 1)
+        return block(&value.pointee)
+    }
+
+    func withEx<T, R>(type: T.Type, count: Int, _ block: (UnsafeMutableBufferPointer<T>) -> R) -> R {
+        let pointer = contents().bindMemory(to: T.self, capacity: count)
+        let buffer = UnsafeMutableBufferPointer(start: pointer, count: count)
+        return block(buffer)
+    }
+
+    func contentsBuffer() -> UnsafeMutableRawBufferPointer {
+        UnsafeMutableRawBufferPointer(start: contents(), count: length)
+    }
+
+    func contentsBuffer<T>(of type: T.Type) -> UnsafeMutableBufferPointer<T> {
+        contentsBuffer().bindMemory(to: type)
+    }
+    func labelled(_ label: String) -> MTLBuffer {
+        self.label = label
+        return self
+    }
 }

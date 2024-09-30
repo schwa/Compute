@@ -11,6 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/schwa/MetalCompilerPlugin", branch: "jwight/develop"),
+        .package(url: "https://github.com/apple/Swift-Algorithms", from: "1.2.0"),
     ],
     targets: [
         .target(name: "Compute"),
@@ -19,7 +20,7 @@ let package = Package(
             name: "Examples",
             dependencies: [
                 "Compute",
-                "MetalSupportLite",
+                .product(name: "Algorithms", package: "swift-algorithms"),
             ],
             resources: [
                 .copy("Bundle.txt"),

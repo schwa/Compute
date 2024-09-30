@@ -81,8 +81,8 @@ public extension Compute {
         }
         try task { task in
             try task { dispatch in
-                let maxTotalThreadsPerThreadgroup = pipeline.computePipelineState.maxTotalThreadsPerThreadgroup
-                try dispatch(pipeline: pipeline, threads: MTLSize(width: width, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
+                let threadPerThreadgroup = min(ceildiv(width, pipeline.threadExecutionWidth) * pipeline.threadExecutionWidth, pipeline.maxTotalThreadsPerThreadgroup)
+                try dispatch(pipeline: pipeline, threads: MTLSize(width: width, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: threadPerThreadgroup , height: 1, depth: 1))
             }
         }
     }
@@ -111,5 +111,44 @@ public extension Compute {
 internal extension MTLSize {
     var shortDescription: String {
         return "[\(width), \(height), \(depth)]"
+    }
+}
+
+internal func ceildiv <T>(_ x: T, _ y: T) -> T where T: BinaryInteger {
+    (x + y - 1) / y
+}
+
+internal func align(_ value: Int, alignment: Int) -> Int {
+    (value + alignment - 1) / alignment * alignment
+}
+
+public extension Compute.Pipeline {
+    func calculateThreadgroupSize(threads: MTLSize) -> MTLSize {
+        switch (threads.width, threads.height, threads.depth) {
+        case (_, 1, 1):
+            if threads.width < threadExecutionWidth {
+                return threads
+            }
+            let threadPerThreadgroup = min(align(threads.width, alignment: threadExecutionWidth), maxTotalThreadsPerThreadgroup)
+            return MTLSize(width: threadPerThreadgroup, height: 1, depth: 1)
+        case (_, _, 1):
+            fatalError()
+        default:
+            fatalError()
+        }
+    }
+}
+
+public extension MTLCommandEncoder {
+    func withDebugGroup<R>(_ string: String, enabled: Bool = true, _ closure: () throws -> R) rethrows -> R {
+        if enabled {
+            pushDebugGroup(string)
+        }
+        defer {
+            if enabled {
+                popDebugGroup()
+            }
+        }
+        return try closure()
     }
 }

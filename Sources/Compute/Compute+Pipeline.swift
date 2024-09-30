@@ -72,11 +72,13 @@ public extension Compute {
         /// - Parameter commandEncoder: The compute command encoder to which the arguments should be bound.
         /// - Throws: `ComputeError.missingBinding` if a required binding is not found for an argument.
         func bind(_ commandEncoder: MTLComputeCommandEncoder) throws {
-            for (name, value) in arguments.arguments {
-                guard let index = bindings[name] else {
-                    throw ComputeError.missingBinding(name)
+            try commandEncoder.withDebugGroup("Binding Arguments") {
+                for (name, value) in arguments.arguments {
+                    guard let index = bindings[name] else {
+                        throw ComputeError.missingBinding(name)
+                    }
+                    value.encode(commandEncoder, index)
                 }
-                value.encode(commandEncoder, index)
             }
         }
     }
