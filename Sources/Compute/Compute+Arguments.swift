@@ -234,7 +234,8 @@ public extension Compute.Argument {
 
     static func threadgroupMemory<T>(type: T.Type, count: Int) -> Self {
         Self { encoder, index in
-            encoder.setThreadgroupMemoryLength(MemoryLayout<T>.stride * count, index: index)
+            let length = ceildiv(MemoryLayout<T>.stride * count, 16) * 16
+            encoder.setThreadgroupMemoryLength(length, index: index)
         }
         constantValue: { _, _ in
             fatalError("Unimplemented")

@@ -16,7 +16,7 @@ public struct BitonicSortDemo: Demo {
         let numEntries = entries.count
         let buffer: MTLBuffer = try entries.withUnsafeMutableBufferPointer { buffer in
             let buffer = UnsafeMutableRawBufferPointer(buffer)
-            return try device.makeBufferEx(bytes: buffer.baseAddress!, length: buffer.count)
+            return device.makeBuffer(bytes: buffer.baseAddress!, length: buffer.count)!
         }
 
         let function = ShaderLibrary.bundle(.module).bitonicSort
