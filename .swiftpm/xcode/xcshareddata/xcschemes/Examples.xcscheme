@@ -52,7 +52,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "Histogram"
+            argument = "CounterDemo"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "MaxParallel"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -13,6 +13,14 @@ public func getMachTimeInNanoseconds() -> UInt64 {
 }
 
 @discardableResult
+public func timed(_ work: () throws -> Void) rethrows -> UInt64 {
+    let start = getMachTimeInNanoseconds()
+    try work()
+    let end = getMachTimeInNanoseconds()
+    return end - start
+}
+
+@discardableResult
 public func timeit<R>(_ work: () throws -> R, display: (UInt64) -> Void) rethrows -> R {
     let start = getMachTimeInNanoseconds()
     let result = try work()

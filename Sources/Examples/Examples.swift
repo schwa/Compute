@@ -21,6 +21,8 @@ enum Examples {
             ThreadgroupLogging.self,
             BitonicSortDemo.self,
             Histogram.self,
+            CounterDemo.self,
+            MaxParallel.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil
