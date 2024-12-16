@@ -31,12 +31,14 @@ enum MaxParallel: Demo {
         pipeline.arguments.count = .buffer(count)
         pipeline.arguments.maximum = .buffer(maximum)
 
+
+        print("thread width,\tmaximum,\ttime (ms)")
         for n in 0...31 {
             let count = Int(pow(2, Double(n+1))) - 1
             let time = try timed() {
                 try compute.run(pipeline: pipeline, width: count)
             }
-            print(count, Array<UInt32>(maximum)[0], Double(time) / Double(1_000_000))
+            print("\(count),\t\(Array<UInt32>(maximum)[0]),\t\(Double(time) / Double(1_000_000))")
         }
     }
 }
