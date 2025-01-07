@@ -1,6 +1,0 @@
-steps:
-    - commands:
-          - "swift package clean"
-          - "swift build"
-          - "swift build --configuration release"
-          - "swift test"

@@ -1,32 +1,16 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
 name: Swift
+env:
+    XCODE_VERSION: "latest-stable"
 on:
   push:
   pull_request:
-    branches:
-      - main
 jobs:
-  build:
-    # macos-latest
-    runs-on: macos-14
+  swift-build:
+    runs-on: macos-15 # macos-latest
     steps:
-      - name: Install Xcode.
-        uses: maxim-lobanov/setup-xcode@v1
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
-          # 15.0 / 16-beta etc
-          xcode-version: 16
-    #   - name: Install just.
-    #     uses: extractions/setup-just@v2
-      - name: Checkout source.
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Build.
-        run: swift build -v
-        # disbable tests because they require macOS-15.
-    #   - name: Run tests.
-    #     run: swift test -v
-    #   - name: Build examples.
-    #     run: just build-examples
+          xcode-version: ${{ env.XCODE_VERSION }}
+      - uses: actions/checkout@v3
+      - run: swift build -v
+      - run: swift test -v
