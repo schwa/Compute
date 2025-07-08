@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "Compute", targets: ["Compute"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/schwa/MetalCompilerPlugin", branch: "jwight/develop"),
+        .package(url: "https://github.com/schwa/MetalCompilerPlugin", from: "0.1.0")
     ],
     targets: [
         .target(name: "Compute"),
