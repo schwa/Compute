@@ -92,3 +92,6 @@ public struct Compute {
         try Pipeline(device: device, function: function, constants: constants, arguments: arguments)
     }
 }
+
+/// Type alias for `Compute` to avoid name conflicts with module name.
+public typealias Compute_ = Compute
