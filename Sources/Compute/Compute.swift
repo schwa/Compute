@@ -19,20 +19,23 @@ public struct Compute {
     /// - Parameters:
     ///   - device: The Metal device to use for compute operations.
     ///   - logger: An optional logger for debugging and performance monitoring.
+    ///   - useLogState: Enable capture of Metal log messages if available.
     /// - Throws: `ComputeError.resourceCreationFailure` if unable to create the command queue.
-    public init(device: MTLDevice, logger: Logger? = nil) throws {
+    public init(device: MTLDevice, logger: Logger? = nil, useLogState: Bool = true) throws {
         self.device = device
         self.logger = logger
         #if !targetEnvironment(simulator)
         if #available(macOS 15, iOS 18, *) {
-            let logStateDescriptor = MTLLogStateDescriptor()
-            logStateDescriptor.bufferSize = 16 * 1_024 * 1_024
-            let logState = try device.makeLogState(descriptor: logStateDescriptor)
-            logState.addLogHandler { _, _, _, message in
-                logger?.log("\(message)")
-            }
             let commandQueueDescriptor = MTLCommandQueueDescriptor()
-            commandQueueDescriptor.logState = logState
+            if useLogState {
+                let logStateDescriptor = MTLLogStateDescriptor()
+                logStateDescriptor.bufferSize = 16 * 1_024 * 1_024
+                let logState = try device.makeLogState(descriptor: logStateDescriptor)
+                logState.addLogHandler { _, _, _, message in
+                    logger?.log("\(message)")
+                }
+                commandQueueDescriptor.logState = logState
+            }
             guard let commandQueue = device.makeCommandQueue(descriptor: commandQueueDescriptor) else {
                 throw ComputeError.resourceCreationFailure
             }

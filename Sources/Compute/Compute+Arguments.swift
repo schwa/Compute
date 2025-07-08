@@ -221,10 +221,13 @@ public extension Compute.Argument {
             }
         }
 
-    static func buffer<T>(_ array: [T], offset: Int = 0) -> Self {
+    static func buffer<T>(_ array: [T], offset: Int = 0, label: String? = nil) -> Self {
         .init { encoder, index in
             let buffer = array.withUnsafeBufferPointer { buffer in
-                encoder.device.makeBuffer(bytes: buffer.baseAddress!, length: buffer.count)
+                return encoder.device.makeBuffer(bytes: buffer.baseAddress!, length: buffer.count * MemoryLayout<T>.stride, options: [])
+            }
+            if let label {
+                buffer?.label = label
             }
             encoder.setBuffer(buffer, offset: offset, index: index)
         }

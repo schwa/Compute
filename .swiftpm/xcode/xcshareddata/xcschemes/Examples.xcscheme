@@ -57,6 +57,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "MaxParallel"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "IsSorted"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
