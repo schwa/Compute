@@ -33,7 +33,7 @@ kernel void add(device int* inA [[buffer(0)]],
 
 // Set up the compute environment
 let device = MTLCreateSystemDefaultDevice()!
-let compute = try Compute(device: device)
+let compute = try Computer(device: device)
 
 // Create input data
 let count = 1000
@@ -53,15 +53,17 @@ let function = library.add
 // Create a compute pipeline and bind arguments.
 var pipeline = try compute.makePipeline(function: function)
 pipeline.arguments.inA = .buffer(bufferA)
-pipeline.arguments.inB = .buffer(inB)
+pipeline.arguments.inB = .buffer(bufferB)
 pipeline.arguments.result = .buffer(bufferResult)
 
 // Run the compute pipeline
 try compute.run(pipeline: pipeline, width: count)
 
 // Read back the results
-result = bufferResult.contents().withUnsafeBytes { $0.bindMemory(to: Int32.self) }
-
+var bufferPointer = bufferResult.contents()
+let bufferRawBuffer32 = bufferPointer.bindMemory(to: Int32.self, capacity: bufferResult.length)
+let bufferBufferPointer = UnsafeBufferPointer(start: bufferRawBuffer32, count: count)
+    
 // Verify the results
 for i in 0..<count {
     assert(result[i] == inA[i] + inB[i], "Computation error at index \(i)")
