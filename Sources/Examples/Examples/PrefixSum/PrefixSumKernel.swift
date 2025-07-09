@@ -14,7 +14,7 @@ enum PrefixSum: Demo {
     static func main() async throws {
 
         // TODO: Succeeds at up to 512 elements, fails at 513+ elements.
-        let input = (0..<512).map(UInt32.init)
+        let input = (0..<513).map(UInt32.init)
         let device = MTLCreateSystemDefaultDevice()!
 
         let inputBuffer = try device.makeBuffer(bytesOf: input, options: [])
@@ -27,8 +27,21 @@ enum PrefixSum: Demo {
             }
         }
         let output = Array(inputBuffer.contentsBuffer(of: UInt32.self))
-        assert(output.count == input.count)
-        assert(output == input.prefixSumExclusive())
+        let expected = input.prefixSumExclusive()
+        print("Input count: \(input.count)")
+        print("Output count: \(output.count)")
+        print("Expected count: \(expected.count)")
+        print("Expected prefix sum: \(expected.prefix(upTo: min(20, expected.count)))")
+        print("Actual output: \(output.prefix(upTo: min(20, output.count)))")
+        print("Count assertion: \(output.count == input.count)")
+        print("Values match: \(output == expected)")
+        if output != expected {
+            let differences = zip(output, expected).enumerated().first { $0.element.0 != $0.element.1 }
+            if let diff = differences {
+                print("First difference at index: \(diff.offset)")
+                print("Expected: \(diff.element.1), Got: \(diff.element.0)")
+            }
+        }
 
         if input.count < 60 {
             print("Input: \(input)")

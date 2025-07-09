@@ -20,7 +20,7 @@ kernel void reduce_downsweep(
     const uint ELEMENT_COUNT = uniforms.element_count;
     
     // Threadgroup shared memory - dynamically sized based on items per workgroup
-    threadgroup uint temp[512]; // Assuming max 256 threads per workgroup (512 items)
+    threadgroup uint temp[1024]; // Support up to 512 threads per workgroup (1024 items)
     
     const uint WORKGROUP_ID = workgroup_id.x + workgroup_id.y * num_workgroups.x;
     const uint WID = WORKGROUP_ID * THREADS_PER_WORKGROUP;

@@ -1,3 +1,6 @@
+list:
+    @just --list
+
 build-docs:
     xcrun xcodebuild docbuild -scheme Compute -derivedDataPath /tmp/compute-docbuild -destination platform=macOS,arch=arm64
     cp -r /tmp/compute-docbuild/Build/Products/Debug/Compute.doccarchive ~/Desktop
@@ -12,5 +15,5 @@ swift-six-check:
     swift clean
     SWIFT_VERSION=6 swift build --verbose
 
-run-prefix-sum
-     env DEVELOPER_DIR=/Applications/Xcode-16.4.0.app xcrun swift run Examples PrefixSum
+run-prefix-sum:
+    env DEVELOPER_DIR=/Applications/Xcode-16.4.0.app xcrun swift run Examples PrefixSum
