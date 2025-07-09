@@ -3,10 +3,18 @@ import MetalKit
 import MetalSupportLite
 import Compute
 
+/**
+    * Perform a parallel prefix sum on the given data buffer
+    *
+    * Based on "Parallel Prefix Sum (Scan) with CUDA"
+    * https://www.eecs.umich.edu/courses/eecs570/hw/parprefix.pdf
+    */
+
 enum PrefixSum: Demo {
     static func main() async throws {
 
-        let input = (0..<10).map(UInt32.init)
+        // TODO: Succeeds at up to 512 elements, fails at 513+ elements.
+        let input = (0..<512).map(UInt32.init)
         let device = MTLCreateSystemDefaultDevice()!
 
         let inputBuffer = try device.makeBuffer(bytesOf: input, options: [])
@@ -19,14 +27,22 @@ enum PrefixSum: Demo {
             }
         }
         let output = Array(inputBuffer.contentsBuffer(of: UInt32.self))
-        print(output)
+        assert(output.count == input.count)
+        assert(output == input.prefixSumExclusive())
+
+        if input.count < 60 {
+            print("Input: \(input)")
+            print("Output: \(output)")
+        }
+        else {
+            print("Input: \(input.prefix(upTo: 20)) ... \(input.suffix(20))")
+            print("Output: \(output.prefix(upTo: 20)) ...  \(output.suffix(20))")
+        }
     }
 }
 
 
 struct PrefixSumUniforms {
-    var workgroup_size_x: UInt32
-    var workgroup_size_y: UInt32
     var threads_per_workgroup: UInt32
     var items_per_workgroup: UInt32
     var element_count: UInt32
@@ -85,8 +101,6 @@ class PrefixSumKernel {
         }
 
         let uniforms = PrefixSumUniforms(
-            workgroup_size_x: UInt32(workgroupSize.width),
-            workgroup_size_y: UInt32(workgroupSize.height),
             threads_per_workgroup: UInt32(threadsPerWorkgroup),
             items_per_workgroup: UInt32(itemsPerWorkgroup),
             element_count: UInt32(count)

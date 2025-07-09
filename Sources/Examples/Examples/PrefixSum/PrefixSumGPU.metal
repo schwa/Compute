@@ -2,8 +2,6 @@
 using namespace metal;
 
 struct PrefixSumUniforms {
-    uint workgroup_size_x;
-    uint workgroup_size_y;
     uint threads_per_workgroup;
     uint items_per_workgroup;
     uint element_count;
@@ -17,8 +15,6 @@ kernel void reduce_downsweep(
     uint3 num_workgroups [[threadgroups_per_grid]],
     uint thread_index_in_threadgroup [[thread_index_in_threadgroup]]
 ) {
-    const uint WORKGROUP_SIZE_X = uniforms.workgroup_size_x;
-    const uint WORKGROUP_SIZE_Y = uniforms.workgroup_size_y;
     const uint THREADS_PER_WORKGROUP = uniforms.threads_per_workgroup;
     const uint ITEMS_PER_WORKGROUP = uniforms.items_per_workgroup;
     const uint ELEMENT_COUNT = uniforms.element_count;
