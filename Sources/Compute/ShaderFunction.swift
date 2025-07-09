@@ -108,7 +108,7 @@ public struct ShaderFunction: Identifiable {
     ///   - name: The name of the shader function.
     ///   - constants: An array of shader constants associated with this function. Defaults to an empty array.
     public init(library: ShaderLibrary, name: String, constants: [ShaderConstant] = []) {
-        // TODO: Make shader constants part of name id
+        // BUG: https://github.com/schwa/Compute/issues/17 Make shader constants part of name id
         self.id = Composite(library.id, name)
         self.library = library
         self.name = name
