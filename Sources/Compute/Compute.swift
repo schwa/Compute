@@ -21,7 +21,7 @@ public struct Compute {
     ///   - logger: An optional logger for debugging and performance monitoring.
     ///   - useLogState: Enable capture of Metal log messages if available.
     /// - Throws: `ComputeError.resourceCreationFailure` if unable to create the command queue.
-    public init(device: MTLDevice, logger: Logger? = nil, useLogState: Bool = true) throws {
+    public init(device: MTLDevice, logger: Logger? = nil, useLogState: Bool = false) throws {
         self.device = device
         self.logger = logger
         #if !targetEnvironment(simulator)
