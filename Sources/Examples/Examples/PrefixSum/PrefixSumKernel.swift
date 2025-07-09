@@ -19,7 +19,7 @@ enum PrefixSum: Demo {
 
         let inputBuffer = try device.makeBuffer(bytesOf: input, options: [])
         let compute = try Compute(device: device)
-        let library = ShaderLibrary.bundle(.module, name: "default")
+        let library = ShaderLibrary.bundle(.module, name: "debug")
         let kernel = try PrefixSumKernel(device: device, dataBuffer: inputBuffer, count: input.count,library: library.make(device))
         try compute.task { task in
             try task { dispatcher in

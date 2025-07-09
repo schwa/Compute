@@ -11,3 +11,6 @@ concurrency-check:
 swift-six-check:
     swift clean
     SWIFT_VERSION=6 swift build --verbose
+
+run-prefix-sum
+     env DEVELOPER_DIR=/Applications/Xcode-16.4.0.app xcrun swift run Examples PrefixSum
