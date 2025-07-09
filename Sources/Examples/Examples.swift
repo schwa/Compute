@@ -24,6 +24,7 @@ enum Examples {
             CounterDemo.self,
             MaxParallel.self,
             IsSorted.self,
+            PrefixSum.self,
         ]
 
         let argument: String? = CommandLine.arguments.count > 1 ? CommandLine.arguments[1].lowercased() : nil

@@ -61,6 +61,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "IsSorted"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "PrefixSum"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
