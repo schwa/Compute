@@ -2,7 +2,12 @@ import Metal
 
 /// Represents a Metal shader library.
 @dynamicMemberLookup
-public struct ShaderLibrary: Sendable {
+public struct ShaderLibrary: Identifiable, Sendable {
+    public enum ID: Hashable, Sendable {
+        case bundle(URL, String?)
+        case source(String)
+    }
+
     /// The default shader library loaded from the main bundle.
     public static let `default` = Self.bundle(.main)
 
@@ -13,7 +18,7 @@ public struct ShaderLibrary: Sendable {
     ///   - name: The name of the metallib file (without extension). If nil, uses the default library.
     /// - Returns: A new ShaderLibrary instance.
     public static func bundle(_ bundle: Bundle, name: String? = nil) -> Self {
-        Self { device in
+        return ShaderLibrary(id: .bundle(bundle.bundleURL, name)) { device in
             if let name {
                 guard let url = bundle.url(forResource: name, withExtension: "metallib") else {
                     fatalError("Could not load metallib.")
@@ -35,7 +40,7 @@ public struct ShaderLibrary: Sendable {
     ///   - enableLogging: Enable Metal shader logging.
     /// - Returns: A new ShaderLibrary instance.
     public static func source(_ source: String, enableLogging: Bool = false) -> Self {
-        Self { device in
+        return ShaderLibrary(id: .source(source)) { device in
             let options = MTLCompileOptions()
             #if !targetEnvironment(simulator)
             if enableLogging {
@@ -51,8 +56,10 @@ public struct ShaderLibrary: Sendable {
         }
     }
 
+    public var id: ID
+
     /// A closure that creates an MTLLibrary given an MTLDevice.
-    var make: @Sendable (MTLDevice) throws -> MTLLibrary
+    public var make: @Sendable (MTLDevice) throws -> MTLLibrary
 
     /// Creates a ShaderFunction with the given name.
     ///
@@ -83,7 +90,7 @@ public struct ShaderLibrary: Sendable {
 /// Represents a compute shader function within a shader library.
 public struct ShaderFunction: Identifiable {
     /// A unique identifier for the shader function.
-    public let id = UUID()
+    public let id: Composite<ShaderLibrary.ID, String>
 
     /// The shader library containing this function.
     public let library: ShaderLibrary
@@ -101,6 +108,8 @@ public struct ShaderFunction: Identifiable {
     ///   - name: The name of the shader function.
     ///   - constants: An array of shader constants associated with this function. Defaults to an empty array.
     public init(library: ShaderLibrary, name: String, constants: [ShaderConstant] = []) {
+        // TODO: Make shader constants part of name id
+        self.id = Composite(library.id, name)
         self.library = library
         self.name = name
         self.constants = constants
@@ -120,6 +129,7 @@ public struct ShaderConstant {
     /// - Parameters:
     ///   - dataType: The Metal data type of the constant.
     ///   - value: The array value of the constant.
+    // BUG: https://github.com/schwa/Compute/issues/16 Get away from Any and use an enum.
     public init(dataType: MTLDataType, value: [some Any]) {
         self.dataType = dataType
         accessor = { (callback: (UnsafeRawPointer) -> Void) in
@@ -137,6 +147,7 @@ public struct ShaderConstant {
     /// - Parameters:
     ///   - dataType: The Metal data type of the constant.
     ///   - value: The value of the constant.
+    // BUG: https://github.com/schwa/Compute/issues/16 Get away from Any and use an enum.
     public init(dataType: MTLDataType, value: some Any) {
         self.dataType = dataType
         accessor = { (callback: (UnsafeRawPointer) -> Void) in
